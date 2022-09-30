@@ -1,6 +1,6 @@
 [package]
 name = "domain_keys"
-version = "0.1.0"
+version = "0.3.1"
 edition = "2021"
 authors = ["darryl.west@raincitysoftware.com"]
 rust-version = "1.63"
