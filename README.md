@@ -12,15 +12,24 @@ _A rust library & cli for key generatoration for domain key identifiers e.g., us
 
 ### Overview
 
-* random number generation based on the range of 2 terra to 13 peta for > 2^53 combinations.
+Features...
+
+* fast random number generation based on the range of 2 terra to 13 peta for > 2^53 combinations and uniformly distributed.
 * time based to the microsecond
 * base62 encoded for size reduction: `[0-9][A-Z][a-z]`
-* size is always 16 bytes
+* size is always 16 characters
+* similar to UUID V7 where a timestamp is mixed with random, specifically random + timestamp(micros) + random
+* shardable, not sortable (_although sort_by could be implemented for the timestamp portion of the key_)
+
+The goal of the random number generation is speed and uniformity--not security.  Domain keys are suitable for identifying elements in a specific domain.  Uniformaty is important for shard routing to insure shards grow equally.
 
 ### When to use
 
-* When you need to create unique identifiers for specified domains e.g. users with the minimum key size that will support billions of entities without collision. You also may want to extract the UTC datetime from the key.
-* When you need to decode a portion of the key to implement data sharding to dozens of shards.
+When you...
+
+* need to create unique identifiers for specified domains e.g. users with the minimum key size that will support billions of entities without collision. You also may want to extract the UTC datetime from the key.
+* need to decode a portion of the key to implement data sharding to dozens of shards.
+* generate your keys on the rust (or other) application's server side.
 
 ### When not to use
 
@@ -43,5 +52,17 @@ If you need to generate a key that is truely globally unique, then use UUID, pro
 `shard`
 `txid`
 
+### References
+
+* [Rust Rand Book](https://rust-random.github.io/book/intro.html)
+* [UUID RFC4122](https://datatracker.ietf.org/doc/html/rfc4122.html)
+* [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
+
+### To Do
+
+* embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)
+* seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122
+* fill bytes to replace current random range
+* is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)
 
 ###### darryl.west | 2022.09.30
