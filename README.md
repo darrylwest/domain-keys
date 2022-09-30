@@ -83,6 +83,8 @@ Flags
 * const fn to generate the base62 chars
 * example of how implement routing logic for various destinations
 * doc tests
+* code coverage - linux only
+* fuzzing (cargo-fuzz)
 * ~~embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)~~
 * ~~seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122~~
 * ~~fill bytes to replace current random range~~
