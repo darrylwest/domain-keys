@@ -1,6 +1,8 @@
 
+use domain_keys::keys::Keys;
 
 fn main() {
-    println!("implement me!");
+    let key = Keys::routing_key();
+    println!("{}", key);
 }
 
