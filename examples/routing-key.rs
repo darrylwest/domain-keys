@@ -1,3 +1,9 @@
+use domain_keys::keys::Keys;
+
 fn main() {
-    println!("implement me");
+    for n in 0..10 {
+        let key = Keys::routing_key();
+        println!("{} - {}", n, key);
+        assert_eq!(key.len(), 16);
+    }
 }

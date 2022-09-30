@@ -27,7 +27,7 @@ docs:
 
 # run the debug app
 run:
-    clear && cargo run --example shard-key
+    clear && cargo run --example routing-key
 
 # build the release
 release:
