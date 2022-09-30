@@ -20,7 +20,7 @@ const ALPHA: [char; 62] = [
 pub struct Keys {}
 
 impl Keys {
-    pub fn shard_key() -> String {
+    pub fn routing_key() -> String {
         let now = Keys::now();
 
         let ts = now.timestamp_micros() as u64;
@@ -98,13 +98,13 @@ mod tests {
     use super::*;
     use std::collections::HashSet;
 
-    const SHARD_KEY_SIZE: usize = 16;
+    const ROUTE_KEY_SIZE: usize = 16;
 
     #[test]
-    fn shard_key() {
-        let key = Keys::shard_key();
+    fn routing_key() {
+        let key = Keys::routing_key();
 
-        assert_eq!(key.len(), SHARD_KEY_SIZE);
+        assert_eq!(key.len(), ROUTE_KEY_SIZE);
     }
 
     #[test]
@@ -120,12 +120,13 @@ mod tests {
 
     #[test]
     fn unique_test() {
-        let max_tests: usize = 1_000; // 10_000_000 <- do this in special integration tests;
+        // this is hardly exhaustive; there more thorough integration tests...
+        let max_tests: usize = 1_000;
         let mut table = HashSet::with_capacity(max_tests);
 
         for _ in 0..max_tests {
-            let key = Keys::shard_key();
-            assert_eq!(key.len(), SHARD_KEY_SIZE);
+            let key = Keys::routing_key();
+            assert_eq!(key.len(), ROUTE_KEY_SIZE);
             assert_eq!(table.insert(key), true);
         }
 

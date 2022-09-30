@@ -19,38 +19,36 @@ Features...
 * base62 encoded for size reduction: `[0-9][A-Z][a-z]`
 * size is always 16 characters
 * similar to UUID V7 where a timestamp is mixed with random, specifically random + timestamp(micros) + random
-* shardable, not sortable (_although sort_by could be implemented for the timestamp portion of the key_)
+* route-able, not sortable (_although sort_by could be implemented for the timestamp portion of the key_)
 
-The goal of the random number generation is speed and uniformity--not security.  Domain keys are suitable for identifying elements in a specific domain.  Uniformaty is important for shard routing to insure shards grow equally.
+The goal of the random number generation is speed and uniformity--not security.  Domain keys are suitable for identifying elements in a specific domain.  Uniformaty is important for routing to insure equally.
 
 ### When to use
 
 When you...
 
 * need to create unique identifiers for specified domains e.g. users with the minimum key size that will support billions of entities without collision. You also may want to extract the UTC datetime from the key.
-* need to decode a portion of the key to implement data sharding to dozens of shards.
+* need to decode a portion of the key to implement data routing to dozens of destinations or database shards.
 * generate your keys on the rust (or other) application's server side.
 
 ### When not to use
 
 If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size.
 
-### Sharded Key Generation
+### Routed Key Generation
 
 
 ### TXID: Time Based Short Key Generation
 
+_TBD_
 
 ### Library Use Examples
 
 
 ### CLI
 
-`keys --shard`
-`keys --txid`
-
-`shard`
-`txid`
+`domain-key` : crates a single routing key
+`domain-key --txid` : creates a single txid key
 
 ### References
 
@@ -60,9 +58,12 @@ If you need to generate a key that is truely globally unique, then use UUID, pro
 
 ### To Do
 
-* embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)
-* seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122
-* fill bytes to replace current random range
-* is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)
+* const fn to generate the base62 chars
+* example of how implement routing logic for various destinations
+* doc tests
+* ~~embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)~~
+* ~~seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122~~
+* ~~fill bytes to replace current random range~~
+* ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
 ###### darryl.west | 2022.09.30
