@@ -8,7 +8,7 @@
                                                        |_____|      
 ```
 
-_A rust library & cli for key generatoration for domain key identifiers e.g., user, provider, inventory item, etc._
+_A rust library & cli for key generation for domain entity identifiers e.g., user, provider, inventory item, etc._
 
 ### Overview
 
@@ -35,10 +35,10 @@ When you...
 
 If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size.
 
-### Routed Key Generation
+### Route Key: rtkey
 
 
-### TXID: Time Based Short Key Generation
+### Timestamp Key: txkey
 
 _TBD_
 
@@ -47,8 +47,15 @@ _TBD_
 
 ### CLI
 
-`domain-key` : crates a single routing key
-`domain-key --txid` : creates a single txid key
+`rtkey` : crates a single routing key
+`txkey` : creates a single txid key
+`show-route --routes n key`: shows the route number (0..n) for the given key
+
+Flags
+* --count n: generates n keys
+* --size n: for tx key, adjust the size of the key
+* --decode: decodes either the rtkey or txkey showing bytes, timestamp, etc
+* route key: define the number of routes; the output 
 
 ### References
 

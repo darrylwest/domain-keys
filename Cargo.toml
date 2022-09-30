@@ -1,12 +1,12 @@
 [package]
 name = "domain_keys"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 authors = ["darryl.west@raincitysoftware.com"]
 rust-version = "1.63"
-description = "key generator"
-keywords = ["keys"]
-categories = ["database", "kv", "kv store"]
+description = "A rust library & cli for key generation for domain entity identifiers e.g., user, provider, inventory item, etc."
+keywords = ["keys", "key-generation", "unique-id"]
+categories = ["database", "kv", "kv store", "routing" ]
 license = "MIT OR Apach-2.0"
 readme = "README.md"
 repository = "https://github.com/darrylwest/domain-keys"
