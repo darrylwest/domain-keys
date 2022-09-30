@@ -35,6 +35,21 @@ When you...
 
 If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size.
 
+
+### Installation
+
+`cargo install domain_keys`
+
+or, if you have rust installed and are at or above version 1.63, do this...
+
+```
+git clone https://github.com/darrylwest/domain-keys.git
+cd domain-keys
+cargo install --path ../domain-keys --bins
+```
+
+This installs all the binary clis.
+
 ### Route Key: rtkey
 
 
