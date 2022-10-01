@@ -79,23 +79,30 @@ impl Keys {
     /// use domain_keys::keys::Keys;
     ///
     /// // some nano second timestamp from 2022-10-01
-    /// let nanos = 1664650548820248432;
+    /// let nanos: u64 = 1664650548820248432;
     /// let base62 = Keys::to_base62(nanos);
     ///
     /// assert_eq!(base62, "1yy7GPuHalc");
     /// assert_eq!(base62.len(), 11);
     ///
     /// // some micro second timestamp from 2022-10-01
-    /// let micros = 1664650548820248;
+    /// let micros: u64 = 1664650548820248;
     /// let base62 = Keys::to_base62(micros);
     ///
     /// assert_eq!(base62, "7ch6b4MAa");
     /// assert_eq!(base62.len(), 9);
     ///
+    /// // some micro second timestamp from 2390-01-01
+    /// let micros: u64 = 13253932800000000;
+    /// let base62 = Keys::to_base62(micros);
+    ///
+    /// assert_eq!(base62, "yhav0arrM");
+    ///
     /// assert_eq!(Keys::to_base62(0), "0");
     /// assert_eq!(Keys::to_base62(10), "A");
     /// assert_eq!(Keys::to_base62(61), "z");
     /// assert_eq!(Keys::to_base62(62), "10");
+    /// assert_eq!(Keys::to_base62(63), "11");
     ///
     /// ```
     ///
