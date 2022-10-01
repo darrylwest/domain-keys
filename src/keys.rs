@@ -125,12 +125,26 @@ impl Keys {
         base.iter().rev().collect::<String>()
     }
 
-    fn gen_random() -> String {
-        let mut rng = rand::thread_rng();
-        Self::to_base62(rng.gen_range(MIN_64..MAX_64))
+    pub fn from_base62(b62: &String) -> u64 {
+        let mut result = 0_u64;
+        let mut p = 1_u64;
+
+        for ch in b62.chars() {
+            let n = Self::decode_digit(ch as u8) as u64;
+
+            assert!(n < 62);
+
+            result += n * p;
+
+            p *= 62;
+
+            assert!(p >= 62);
+        }
+
+        result
     }
 
-    pub fn decode_digit(digit: u8) -> u8 {
+    fn decode_digit(digit: u8) -> u8 {
         const ZERO: u8 = 48;
         const NINE: u8 = 57;
         const BIG_A: u8 = 65;
@@ -144,6 +158,12 @@ impl Keys {
             LITTLE_A..=LITTLE_Z => digit - LITTLE_A + 36,
             _ => panic!("out of range"),
         }
+    }
+
+    // return a random number between min and max to stay in the 7 character range
+    fn gen_random() -> String {
+        let mut rng = rand::thread_rng();
+        Self::to_base62(rng.gen_range(MIN_64..MAX_64))
     }
 
     /*
@@ -170,7 +190,24 @@ mod tests {
     }
 
     #[test]
-    fn base62() {
+    fn base62_correctness() {
+        assert_eq!(Keys::to_base62(0), "0");
+        assert_eq!(Keys::to_base62(9), "9");
+        assert_eq!(Keys::to_base62(10), "A");
+        assert_eq!(Keys::to_base62(35), "Z");
+        assert_eq!(Keys::to_base62(36), "a");
+        assert_eq!(Keys::to_base62(61), "z");
+        assert_eq!(Keys::to_base62(62), "10");
+        assert_eq!(Keys::to_base62(63), "11");
+
+        let n = u64::MAX;
+        let b62 = "LygHa16AHYF".to_string();
+        assert_eq!(Keys::to_base62(n), b62);
+        assert_eq!(b62.len(), 11);
+    }
+
+    #[test]
+    fn base62_key_limits() {
         let b62 = Keys::to_base62(MIN_64);
         assert_eq!(b62, "100eyAa");
         assert_eq!(b62.len(), 7);
@@ -228,6 +265,24 @@ mod tests {
             assert_eq!(y, n);
 
             n += 1;
+        }
+    }
+
+    #[test]
+    fn decode_base62() {
+        let list = [
+            ("0", 0),
+            ("9", 9),
+            ("A", 10),
+            ("Z", 35),
+            ("a", 36),
+            ("z", 61),
+            ("10", 62),
+            ("11", 63),
+        ];
+
+        for (b62, n) in list {
+            assert_eq!(n, Keys::from_base62(&b62.to_string()));
         }
     }
 }

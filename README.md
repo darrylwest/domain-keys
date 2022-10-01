@@ -79,11 +79,13 @@ Flags
 
 ### To Do
 
-* replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys
+* decode base 62
+* refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate lib/crate
 * example of how implement routing logic for various destinations
 * doc tests
 * code coverage - linux only
 * fuzzing (cargo-fuzz)
+* ~~replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys~~
 * ~~const fn to generate the base62 chars~~
 * ~~embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)~~
 * ~~seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122~~
