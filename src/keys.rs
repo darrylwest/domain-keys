@@ -1,4 +1,3 @@
-use log::debug;
 use rand::Rng;
 use std::char;
 
@@ -25,14 +24,6 @@ impl Keys {
 
         let ts = now.timestamp_micros() as u64;
         let key = Self::to_base62(ts);
-
-        debug!(
-            "time now: {:?}, ts: {}, value: {} len: {}",
-            now,
-            ts,
-            key,
-            key.len()
-        );
 
         let mut pad: String = Self::gen_random();
 
