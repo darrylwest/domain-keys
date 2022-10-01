@@ -1,4 +1,3 @@
-use log::debug;
 use rand::Rng;
 use std::char;
 
@@ -20,19 +19,23 @@ const ALPHA: [char; 62] = [
 pub struct Keys {}
 
 impl Keys {
+    /// Generate a new base62 routing key.
+    ///
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let key = Keys::routing_key();
+    ///
+    /// assert_eq!(key.len(), 16);
+    /// ```
     pub fn routing_key() -> String {
         let now = Keys::now();
 
         let ts = now.timestamp_micros() as u64;
         let key = Self::to_base62(ts);
-
-        debug!(
-            "time now: {:?}, ts: {}, value: {} len: {}",
-            now,
-            ts,
-            key,
-            key.len()
-        );
 
         let mut pad: String = Self::gen_random();
 
@@ -41,10 +44,35 @@ impl Keys {
         pad.to_string()
     }
 
+    /// return the current time instant as a NaiveDateTime -- always UTC.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let t_now = Keys::now();
+    /// let y_now = Keys::now();
+    ///
+    /// assert!(t_now < y_now);
+    /// ```
+    ///
     pub fn now() -> NaiveDateTime {
         Utc::now().naive_utc()
     }
 
+    /// return the timestamp in micro seconds from the given NaiveDateTime value.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let key = Keys::routing_key();
+    ///
+    /// assert_eq!(key.len(), 16);
+    /// ```
+    ///
     pub fn get_timestamp(dt: NaiveDateTime) -> u64 {
         dt.timestamp_micros() as u64
     }
@@ -89,6 +117,12 @@ impl Keys {
             _ => panic!("out of range"),
         }
     }
+
+    /*
+    pub fn get_route(&self, total_routes: u8) -> u8 {
+        (n % total_routes) as u8
+    }
+    */
 
     // TODO implement calc_route from the key (first two digits) and the number of routes
 }
