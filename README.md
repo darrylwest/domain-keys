@@ -12,12 +12,12 @@ _A rust library & cli for key generation for domain entity identifiers e.g., use
 
 ### Overview
 
-Features...
+#### Routing Key Features...
 
-* fast random number generation based on the range of 2 terra to 13 peta for > 2^53 combinations and uniformly distributed.
+* fast, uniformly distributed random number generation based on range of 0 to 3_464_804_000_000 (3.5 Terra)
 * time based to the microsecond
 * base62 encoded for size reduction: `[0-9][A-Z][a-z]`
-* size is always 16 characters
+* routing key is always 16 characters, 9 date and 7 random including routing key (first two chars)
 * similar to UUID V7 where a timestamp is mixed with random, specifically random + timestamp(micros) + random
 * route-able, not sortable (_although sort_by could be implemented for the timestamp portion of the key_)
 

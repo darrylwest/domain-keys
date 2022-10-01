@@ -3,9 +3,9 @@ use std::char;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const MAX_64: u64 = 13535000000000000;
-const MIN_64: u64 = 218400000000000;
-// delta = 13_316_600_000_000_000
+const MAX_64: u64 = 3521500000000;
+const MIN_64: u64 = 56810000000;
+// delta = 3_464_804_000_000
 
 // base62 conversion table
 const ALPHA: [char; 62] = [
@@ -53,11 +53,16 @@ impl Keys {
     /// use domain_keys::keys::Keys;
     ///
     /// let t0 = Keys::now();
-    /// println!("{}", t0);
+    /// if std::env::consts::OS == "macos" {
+    ///     println!("NOTE: mac os only resolves to microseconds...");
+    /// }
     /// let t1 = Keys::now();
     ///
     /// assert!(t0 < t1);
     /// ```
+    /// NOTE: osx time defaults to microseconds but the NanoTimeStamp is looking for nanos.  This shouldn't matter
+    /// for routing keys because they always resolve to micros.  But if you plan to use time based `txkey` with
+    /// nano seconds, be aware that mac always trucates the nanos to `000`.  Not a problem on linux.
     ///
     pub fn now() -> NanoTimeStamp {
         match SystemTime::now().duration_since(UNIX_EPOCH) {
@@ -66,11 +71,38 @@ impl Keys {
         }
     }
 
-    // convert the number to a b36 string; pad left to 11 chars
-    fn to_base62(number: u64) -> String {
+    /// convert the u64 number to a base 62 string.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// // some nano second timestamp from 2022-10-01
+    /// let nanos = 1664650548820248432;
+    /// let base62 = Keys::to_base62(nanos);
+    ///
+    /// assert_eq!(base62, "1yy7GPuHalc");
+    /// assert_eq!(base62.len(), 11);
+    ///
+    /// // some micro second timestamp from 2022-10-01
+    /// let micros = 1664650548820248;
+    /// let base62 = Keys::to_base62(micros);
+    ///
+    /// assert_eq!(base62, "7ch6b4MAa");
+    /// assert_eq!(base62.len(), 9);
+    ///
+    /// assert_eq!(Keys::to_base62(0), "0");
+    /// assert_eq!(Keys::to_base62(10), "A");
+    /// assert_eq!(Keys::to_base62(61), "z");
+    /// assert_eq!(Keys::to_base62(62), "10");
+    ///
+    /// ```
+    ///
+    pub fn to_base62(number: u64) -> String {
         let radix = ALPHA.len() as u64;
         let mut n = number;
-        let mut base: Vec<char> = Vec::with_capacity(30);
+        let mut base: Vec<char> = Vec::with_capacity(16);
 
         loop {
             let idx = (n % radix) as usize;
@@ -78,7 +110,7 @@ impl Keys {
 
             n /= radix;
 
-            if n < radix {
+            if n == 0 {
                 break;
             }
         }
@@ -133,10 +165,12 @@ mod tests {
     #[test]
     fn base62() {
         let b62 = Keys::to_base62(MIN_64);
-        assert_eq!(b62, "013NOrRI");
+        assert_eq!(b62, "100eyAa");
+        assert_eq!(b62.len(), 7);
 
         let b62 = Keys::to_base62(MAX_64);
-        assert_eq!(b62, "zPGRMW7E");
+        assert_eq!(b62.len(), 7);
+        assert_eq!(b62, "zzsF7gm");
 
         assert!(true)
     }
