@@ -1,6 +1,6 @@
 # domain-keys
 
-```
+```bash
  _____                        __          __  __                    
 |     \.-----.--------.---.-.|__|.-----. |  |/  |.-----.--.--.-----.
 |  --  |  _  |        |  _  ||  ||     | |     < |  -__|  |  |__ --|
@@ -42,7 +42,7 @@ If you need to generate a key that is truely globally unique, then use UUID, pro
 
 or, if you have rust installed and are at or above version 1.63, do this...
 
-```
+```bash
 git clone https://github.com/darrylwest/domain-keys.git
 cd domain-keys
 cargo install --path ../domain-keys --bins
@@ -80,11 +80,12 @@ Flags
 
 ### To Do
 
-* const fn to generate the base62 chars
+* replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys
 * example of how implement routing logic for various destinations
 * doc tests
 * code coverage - linux only
 * fuzzing (cargo-fuzz)
+* ~~const fn to generate the base62 chars~~
 * ~~embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)~~
 * ~~seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122~~
 * ~~fill bytes to replace current random range~~
