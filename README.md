@@ -33,8 +33,7 @@ When you...
 
 ### When not to use
 
-If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size.
-
+If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size or being compatible with RFC4122 (UUID standard).
 
 ### Installation
 
@@ -91,4 +90,4 @@ Flags
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.09.30
+###### darryl.west | 2022.10.01

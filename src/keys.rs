@@ -1,8 +1,7 @@
 use rand::Rng;
 use std::char;
 
-use chrono::naive::NaiveDateTime;
-use chrono::Utc;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 const MAX_64: u64 = 13535000000000000;
 const MIN_64: u64 = 218400000000000;
@@ -15,6 +14,9 @@ const ALPHA: [char; 62] = [
     'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
     'v', 'w', 'x', 'y', 'z',
 ];
+
+/// Define the micro timestamp
+type NanoTimeStamp = u128;
 
 pub struct Keys {}
 
@@ -32,9 +34,8 @@ impl Keys {
     /// assert_eq!(key.len(), 16);
     /// ```
     pub fn routing_key() -> String {
-        let now = Keys::now();
+        let ts = (Keys::now() / 1_000) as u64;
 
-        let ts = now.timestamp_micros() as u64;
         let key = Self::to_base62(ts);
 
         let mut pad: String = Self::gen_random();
@@ -44,37 +45,24 @@ impl Keys {
         pad.to_string()
     }
 
-    /// return the current time instant as a NaiveDateTime -- always UTC.
+    /// return the current time in nanoseconds.  time is from the system clock.
     ///
     /// # Example:
     ///
     /// ```rust
     /// use domain_keys::keys::Keys;
     ///
-    /// let t_now = Keys::now();
-    /// let y_now = Keys::now();
+    /// let t0 = Keys::now();
+    /// let t1 = Keys::now();
     ///
-    /// assert!(t_now < y_now);
+    /// assert!(t0 <= t1);
     /// ```
     ///
-    pub fn now() -> NaiveDateTime {
-        Utc::now().naive_utc()
-    }
-
-    /// return the timestamp in micro seconds from the given NaiveDateTime value.
-    ///
-    /// # Example:
-    ///
-    /// ```rust
-    /// use domain_keys::keys::Keys;
-    ///
-    /// let key = Keys::routing_key();
-    ///
-    /// assert_eq!(key.len(), 16);
-    /// ```
-    ///
-    pub fn get_timestamp(dt: NaiveDateTime) -> u64 {
-        dt.timestamp_micros() as u64
+    pub fn now() -> NanoTimeStamp {
+        match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(t) => t.as_nanos(),
+            Err(_) => panic!("System time befor Unix Epoch"),
+        }
     }
 
     // convert the number to a b36 string; pad left to 11 chars
