@@ -53,9 +53,10 @@ impl Keys {
     /// use domain_keys::keys::Keys;
     ///
     /// let t0 = Keys::now();
+    /// println!("{}", t0);
     /// let t1 = Keys::now();
     ///
-    /// assert!(t0 <= t1);
+    /// assert!(t0 < t1);
     /// ```
     ///
     pub fn now() -> NanoTimeStamp {
