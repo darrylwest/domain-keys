@@ -32,7 +32,7 @@ run:
 # build the release
 release:
     clear
-    cargo build --release && clear && ./target/release/spacial_controller --help
+    cargo build --release && clear && ./target/release/base62 --help
 
 # watch the current folders and run tests when a file is changed
 watch:
