@@ -12,12 +12,12 @@ _A rust library & cli for key generation for domain entity identifiers e.g., use
 
 ### Overview
 
-Features...
+#### Routing Key Features...
 
-* fast random number generation based on the range of 2 terra to 13 peta for > 2^53 combinations and uniformly distributed.
+* fast, uniformly distributed random number generation based on range of 0 to 3_464_804_000_000 (3.5 Terra)
 * time based to the microsecond
 * base62 encoded for size reduction: `[0-9][A-Z][a-z]`
-* size is always 16 characters
+* routing key is always 16 characters, 9 date and 7 random including routing key (first two chars)
 * similar to UUID V7 where a timestamp is mixed with random, specifically random + timestamp(micros) + random
 * route-able, not sortable (_although sort_by could be implemented for the timestamp portion of the key_)
 
@@ -33,8 +33,7 @@ When you...
 
 ### When not to use
 
-If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size.
-
+If you need to generate a key that is truely globally unique, then use UUID, probably v4 or v1.  You also are not concerned with key size or being compatible with RFC4122 (UUID standard).
 
 ### Installation
 
@@ -74,21 +73,27 @@ Flags
 
 ### References
 
+* [Base62 Defined](https://en.wikipedia.org/wiki/Base62)
 * [Rust Rand Book](https://rust-random.github.io/book/intro.html)
 * [UUID RFC4122](https://datatracker.ietf.org/doc/html/rfc4122.html)
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
 
 ### To Do
 
-* replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys
+* refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate module
+* extend the random number MIN to generate 5 chars then pad to 7 with zeros
 * example of how implement routing logic for various destinations
-* doc tests
+* _doc tests_
 * code coverage - linux only
+* add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
+* add error enums?
+* ~~decode base 62~~
+* ~~replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys~~
 * ~~const fn to generate the base62 chars~~
 * ~~embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)~~
 * ~~seed the time stamp sequence number (2 bytes u16) with a random number for RFC4122~~
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.09.30
+###### darryl.west | 2022.10.02
