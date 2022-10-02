@@ -81,10 +81,13 @@ Flags
 ### To Do
 
 * refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate module
+* extend the random number MIN to generate 5 chars then pad to 7 with zeros
 * example of how implement routing logic for various destinations
-* doc tests
+* _doc tests_
 * code coverage - linux only
+* add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
+* add error enums?
 * ~~decode base 62~~
 * ~~replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys~~
 * ~~const fn to generate the base62 chars~~

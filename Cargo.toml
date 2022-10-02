@@ -10,6 +10,7 @@ categories = ["database", "kv", "kv store", "routing" ]
 license = "MIT OR Apach-2.0"
 readme = "README.md"
 repository = "https://github.com/darrylwest/domain-keys"
+exclude = [ ".github/*" ]
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -18,5 +19,4 @@ publish = false
 rand = { version = "0.8", features = ["small_rng"] }
 clap = { version = "4", features = ["derive"] }
 anyhow = "1.0"
-
 
