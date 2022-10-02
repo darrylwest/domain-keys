@@ -1,6 +1,8 @@
-/*!
- * This is a doc...
- */
+//!
+//! This is the base62 module. Specifications can be found [here](https://en.wikipedia.org/wiki/Base62).  
+//! The library and associated binary encode u64 to String and decode &str to Result<u64, Error>.
+//! The character set is `[0..9A..Za..z]`.
+//!
 
 // base62 conversion table
 const ALPHA: [char; 62] = [
