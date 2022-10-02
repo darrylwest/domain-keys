@@ -125,20 +125,15 @@ impl Keys {
         base.iter().rev().collect::<String>()
     }
 
-    pub fn from_base62(b62: &String) -> u64 {
+    pub fn from_base62(b62: &str) -> u64 {
+        let radix = 62_u64;
         let mut result = 0_u64;
-        let mut p = 1_u64;
 
-        for ch in b62.chars() {
+        for (p, ch) in b62.chars().rev().enumerate() {
             let n = Self::decode_digit(ch as u8) as u64;
+            let q = radix.pow(p as u32);
 
-            assert!(n < 62);
-
-            result += n * p;
-
-            p *= 62;
-
-            assert!(p >= 62);
+            result += n * q;
         }
 
         result
