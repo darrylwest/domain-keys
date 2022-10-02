@@ -84,6 +84,7 @@ Flags
 * extend the random number MIN to generate 5 chars then pad to 7 with zeros
 * example of how implement routing logic for various destinations
 * _doc tests_
+* create trait EncodeBase62 and DecodeBase62 to restrict generics to encode(any number) decode(vec<u8>, string, str, array[u8])
 * code coverage - linux only
 * add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
