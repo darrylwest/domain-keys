@@ -92,6 +92,7 @@ impl Base62 {
     ///
     /// // test for empty string error
     /// assert!(Base62::decode(&"".to_string()).is_err());
+    /// assert!(Base62::decode(&"L- GG".to_string()).is_err());
     ///
     /// ```
     pub fn decode(b62: &str) -> Result<u64, Base62Error> {
@@ -100,13 +101,14 @@ impl Base62 {
             return Err(Base62Error::EmptyString);
         }
 
-        // validate chars in the string
-
         let radix = 62_u64;
         let mut result = 0_u64;
 
         for (p, ch) in b62.chars().rev().enumerate() {
-            let n = Self::decode_digit(ch as u8) as u64;
+            let n = match Self::decode_digit(ch as u8) {
+                Ok(n) => n as u64,
+                Err(err) => return Err(err),
+            };
             let q = radix.pow(p as u32);
 
             result += n * q;
@@ -115,7 +117,7 @@ impl Base62 {
         Ok(result)
     }
 
-    fn decode_digit(digit: u8) -> u8 {
+    fn decode_digit(digit: u8) -> Result<u8, Base62Error> {
         const ZERO: u8 = 48;
         const NINE: u8 = 57;
         const BIG_A: u8 = 65;
@@ -124,10 +126,10 @@ impl Base62 {
         const LITTLE_Z: u8 = 97 + 26;
 
         match digit {
-            ZERO..=NINE => digit - ZERO,
-            BIG_A..=BIG_Z => digit - BIG_A + 10,
-            LITTLE_A..=LITTLE_Z => digit - LITTLE_A + 36,
-            _ => panic!("out of range"),
+            ZERO..=NINE => Ok(digit - ZERO),
+            BIG_A..=BIG_Z => Ok(digit - BIG_A + 10),
+            LITTLE_A..=LITTLE_Z => Ok(digit - LITTLE_A + 36),
+            _ => Err(Base62Error::InvalidChar),
         }
     }
 }
@@ -163,8 +165,14 @@ mod tests {
 
     #[test]
     fn decode_invalid_char() {
-        // TODO...
-        assert!(true);
+        let b62 = String::from("AB~CY");
+        match Base62::decode(&b62.to_string()) {
+            Ok(_) => panic!("should not be ok"),
+            Err(err) => println!("err: {:?}", err),
+        }
+
+        assert!(Base62::decode(&"LLLL&GG".to_string()).is_err());
+        assert!(Base62::decode(&"-bad".to_string()).is_err());
     }
 
     #[test]
@@ -190,19 +198,19 @@ mod tests {
         let mut n = 0_u8;
 
         for x in b'0'..=b'9' {
-            let y = Base62::decode_digit(x);
+            let y = Base62::decode_digit(x).unwrap();
             assert_eq!(y, n);
             n += 1;
         }
 
         for x in b'A'..=b'Z' {
-            let y = Base62::decode_digit(x);
+            let y = Base62::decode_digit(x).unwrap();
             assert_eq!(y, n);
             n += 1;
         }
 
         for x in b'a'..=b'z' {
-            let y = Base62::decode_digit(x);
+            let y = Base62::decode_digit(x).unwrap();
             assert_eq!(y, n);
             n += 1;
         }
@@ -212,7 +220,7 @@ mod tests {
         n = 0;
         for ch in ALPHA {
             let x = ch as u8;
-            let y = Base62::decode_digit(x);
+            let y = Base62::decode_digit(x).unwrap();
             assert_eq!(y, n);
 
             n += 1;
