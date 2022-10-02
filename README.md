@@ -79,12 +79,12 @@ Flags
 
 ### To Do
 
-* decode base 62
-* refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate lib/crate
+* refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate module
 * example of how implement routing logic for various destinations
 * doc tests
 * code coverage - linux only
 * fuzzing (cargo-fuzz)
+* ~~decode base 62~~
 * ~~replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys~~
 * ~~const fn to generate the base62 chars~~
 * ~~embed a sequence into keys? similar to RFC4122 (see uuid timestamp impl)~~
