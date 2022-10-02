@@ -73,6 +73,7 @@ Flags
 
 ### References
 
+* [Base62 Defined](https://en.wikipedia.org/wiki/Base62)
 * [Rust Rand Book](https://rust-random.github.io/book/intro.html)
 * [UUID RFC4122](https://datatracker.ietf.org/doc/html/rfc4122.html)
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
@@ -92,4 +93,4 @@ Flags
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.10.01
+###### darryl.west | 2022.10.02
