@@ -37,18 +37,37 @@ impl CliArgs {
     }
 }
 
+fn show_decode(s: &str, verbose: bool) {
+    match Base62::decode(s) {
+        Ok(n) => {
+            if verbose {
+                println!("{} -> {}", s, n);
+            } else {
+                println!("{}", n);
+            }
+        }
+        Err(err) => eprintln!("Error parsing Base62 string: {:?}", err),
+    }
+}
+
+fn show_encode(n: u64, verbose: bool) {
+    let value = Base62::encode(n);
+    if verbose {
+        println!("{} -> {}", n, value);
+    } else {
+        println!("{}", value);
+    }
+}
+
 fn main() {
     let args = CliArgs::new();
 
-    println!("{:?}", args);
+    // println!("{:?}", args);
 
     if let Some(n) = args.encode {
-        println!("{}", Base62::encode(n));
-    } else if let Some(s) = args.decode {
-        match Base62::decode(&s) {
-            Ok(n) => println!("{}", n),
-            Err(err) => eprintln!("Error parsing Base62 string: {:?}", err),
-        }
+        show_encode(n, !args.quiet);
+    } else if let Some(base62) = args.decode {
+        show_decode(&base62, !args.quiet)
     } else if args.timestamp {
         let now = domain_keys::keys::Keys::now() as u64;
         println!("{} -> {}", now, Base62::encode(now));
