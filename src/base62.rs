@@ -1,4 +1,6 @@
-pub struct Base62 {}
+/*!
+ * This is a doc...
+ */
 
 // base62 conversion table
 const ALPHA: [char; 62] = [
@@ -7,6 +9,17 @@ const ALPHA: [char; 62] = [
     'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
     'v', 'w', 'x', 'y', 'z',
 ];
+
+/// Empty string and invalid chars; used in decode.
+#[derive(Debug)]
+pub enum Base62Error {
+    EmptyString,
+    InvalidChar,
+}
+
+/// The magic starts here... an empty struct.
+#[derive(Debug)]
+pub struct Base62 {}
 
 impl Base62 {
     ///
@@ -64,7 +77,31 @@ impl Base62 {
         base.iter().rev().collect::<String>()
     }
 
-    pub fn decode(b62: &str) -> u64 {
+    ///
+    /// Decode the base62 string and return Result<u64, Base62Error>. Checks for empty string and invalid char.  
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::base62::Base62;
+    ///
+    /// let b62 = "zZAa";
+    /// let value = Base62::decode(&b62.to_string()).expect("should get a number");
+    ///
+    /// assert_eq!(value, 14673204);
+    ///
+    /// // test for empty string error
+    /// assert!(Base62::decode(&"".to_string()).is_err());
+    ///
+    /// ```
+    pub fn decode(b62: &str) -> Result<u64, Base62Error> {
+        // validate string is not empty
+        if b62.is_empty() {
+            return Err(Base62Error::EmptyString);
+        }
+
+        // validate chars in the string
+
         let radix = 62_u64;
         let mut result = 0_u64;
 
@@ -75,7 +112,7 @@ impl Base62 {
             result += n * q;
         }
 
-        result
+        Ok(result)
     }
 
     fn decode_digit(digit: u8) -> u8 {
@@ -109,11 +146,30 @@ mod tests {
     #[test]
     fn simple_decode() {
         let b62 = String::from("zaZA90");
-        assert_eq!(Base62::decode(&b62), 56424431326);
+        let n = Base62::decode(&b62.to_string()).unwrap();
+        assert_eq!(n, 56424431326);
+    }
+
+    #[test]
+    fn decode_empty_string() {
+        let b62 = String::from("");
+        match Base62::decode(&b62.to_string()) {
+            Ok(_) => panic!("should not be ok"),
+            Err(err) => println!("err: {:?}", err),
+        }
+
+        assert!(Base62::decode(&"".to_string()).is_err());
+    }
+
+    #[test]
+    fn decode_invalid_char() {
+        // TODO...
+        assert!(true);
     }
 
     #[test]
     fn base62_correctness() {
+        // TODO replace with 0..9, A..Z, a..z; use decode to verify
         assert_eq!(Base62::encode(0), "0");
         assert_eq!(Base62::encode(9), "9");
         assert_eq!(Base62::encode(10), "A");
@@ -177,7 +233,8 @@ mod tests {
         ];
 
         for (b62, n) in list {
-            assert_eq!(n, Base62::decode(&b62.to_string()));
+            let value = Base62::decode(&b62.to_string()).unwrap();
+            assert_eq!(n, value);
         }
     }
 }
