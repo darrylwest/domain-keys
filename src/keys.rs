@@ -108,6 +108,10 @@ mod tests {
             .iter()
             .map(|x| Keys::encode_with_pad(*x))
             .for_each(|s| assert_eq!(s.len(), 7));
+    
+        // test the formats for min and max
+        assert_eq!(Keys::encode_with_pad(MIN_64), "0010000");
+        assert_eq!(Keys::encode_with_pad(MAX_64), "zzzzzzz");
     }
 
     #[test]
