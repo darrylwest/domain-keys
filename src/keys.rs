@@ -3,9 +3,9 @@ use rand::Rng;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const MAX_64: u64 = 3521500000000;
-const MIN_64: u64 = 56810000000;
-// delta = 3_464_804_000_000
+const MAX_64: u64 = 3521614606207; // largest 7 digit from -> zzzzzzz
+const MIN_64: u64 = 14776336; // smallest 5 digit conversionn from -> 10000
+                              // delta = 3_464_804_000_000
 
 /// Define the micro timestamp
 type NanoTimeStamp = u128;
@@ -66,7 +66,9 @@ impl Keys {
     // return a random number between min and max to stay in the 7 character range
     fn gen_random() -> String {
         let mut rng = rand::thread_rng();
-        Base62::encode(rng.gen_range(MIN_64..MAX_64))
+
+        // make sure we always return 7 characters, padded with zeros...
+        format!("{:07}", Base62::encode(rng.gen_range(MIN_64..MAX_64)))
     }
 
     /*

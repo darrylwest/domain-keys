@@ -14,7 +14,7 @@ _A rust library & cli for key generation for domain entity identifiers e.g., use
 
 #### Routing Key Features...
 
-* fast, uniformly distributed random number generation based on range of 0 to 3_464_804_000_000 (3.5 Terra)
+* fast, uniformly distributed random number generation based on large range (10^40?) of values
 * time based to the microsecond
 * base62 encoded for size reduction: `[0-9][A-Z][a-z]`
 * routing key is always 16 characters, 9 date and 7 random including routing key (first two chars)
@@ -80,15 +80,17 @@ Flags
 
 ### To Do
 
-* refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate module
-* extend the random number MIN to generate 5 chars then pad to 7 with zeros
+* _finish keys implementation, get_timestamp(), get_route()_
 * example of how implement routing logic for various destinations
-* _doc tests_
+* _doc and integration tests_
+* create a key generation service - UDP request; do the same for base62
 * create trait EncodeBase62 and DecodeBase62 to restrict generics to encode(any number) decode(vec<u8>, string, str, array[u8])
 * code coverage - linux only
 * add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
-* add error enums?
+* ~~add error enums for base62~~
+* ~~extend the random number MIN to generate 5 chars then pad to 7 with zeros~~
+* ~~refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate module~~
 * ~~decode base 62~~
 * ~~replace chrono with std::time::{SystemTime, Duration, UNIX_EPOCH}; return timestamp in microseconds from keys~~
 * ~~const fn to generate the base62 chars~~
@@ -97,4 +99,4 @@ Flags
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.10.02
+###### darryl.west | 2022.10.03
