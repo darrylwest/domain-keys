@@ -3,9 +3,10 @@ use rand::Rng;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const MAX_64: u64 = 3521614606207; // largest 7 digit from -> zzzzzzz
-const MIN_64: u64 = 14776336; // smallest 5 digit conversionn from -> 10000
-                              // delta = 3_464_804_000_000
+const MAX_64: u64 = 3_521_614_606_207; // largest 7 digit from -> zzzzzzz
+const MIN_64: u64 = 14_776_336; // smallest 5 digit conversionn from -> 0010000
+const INSERT_INDEX: usize = 6;
+const ROUTE_KEY_SIZE: usize = 16;
 
 /// Define the micro timestamp
 type NanoTimeStamp = u128;
@@ -34,7 +35,9 @@ impl Keys {
         let mut pad: String = Self::encode_with_pad(Self::gen_random());
 
         // insert the timestamp at the 6th position
-        pad.insert_str(6, key.as_str());
+        pad.insert_str(INSERT_INDEX, key.as_str());
+
+        assert_eq!(pad.len(), ROUTE_KEY_SIZE);
 
         pad.to_string()
     }
@@ -91,7 +94,6 @@ mod tests {
     use super::*;
     use std::collections::HashSet;
 
-    const ROUTE_KEY_SIZE: usize = 16;
 
     #[test]
     fn random_number_in_range() {
