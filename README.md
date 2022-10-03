@@ -77,6 +77,7 @@ Flags
 * [Rust Rand Book](https://rust-random.github.io/book/intro.html)
 * [UUID RFC4122](https://datatracker.ietf.org/doc/html/rfc4122.html)
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
+* [Resis serialization protocol spec](https://redis.io/docs/reference/protocol-spec/)
 
 ### To Do
 

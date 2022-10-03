@@ -26,12 +26,14 @@ impl Keys {
     /// assert_eq!(key.len(), 16);
     /// ```
     pub fn routing_key() -> String {
+        // get the timestamp in micros
         let ts = (Keys::now() / 1_000) as u64;
-
         let key = Base62::encode(ts);
 
-        let mut pad: String = Self::gen_random();
+        // now the random number padded to 7 chars
+        let mut pad: String = Self::encode_with_pad(Self::gen_random());
 
+        // insert the timestamp at the 6th position
         pad.insert_str(6, key.as_str());
 
         pad.to_string()
@@ -64,11 +66,15 @@ impl Keys {
     }
 
     // return a random number between min and max to stay in the 7 character range
-    fn gen_random() -> String {
+    fn gen_random() -> u64 {
         let mut rng = rand::thread_rng();
 
-        // make sure we always return 7 characters, padded with zeros...
-        format!("{:07}", Base62::encode(rng.gen_range(MIN_64..MAX_64)))
+        rng.gen_range(MIN_64..MAX_64)
+    }
+
+    // ensure 7 characters, padded with zeros...
+    fn encode_with_pad(n: u64) -> String {
+        format!("{:0>7}", Base62::encode(n))
     }
 
     /*
@@ -86,6 +92,23 @@ mod tests {
     use std::collections::HashSet;
 
     const ROUTE_KEY_SIZE: usize = 16;
+
+    #[test]
+    fn random_number_in_range() {
+        for _ in 0..10 {
+            assert!(Keys::gen_random() >= MIN_64);
+            assert!(Keys::gen_random() <= MAX_64);
+        }
+    }
+
+    #[test]
+    fn encode_padding_size() {
+        // test max, min and halfway point
+        [MAX_64, MIN_64, MAX_64 / 2]
+            .iter()
+            .map(|x| Keys::encode_with_pad(*x))
+            .for_each(|s| assert_eq!(s.len(), 7));
+    }
 
     #[test]
     fn routing_key() {
