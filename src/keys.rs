@@ -85,9 +85,56 @@ impl Keys {
         format!("{:0>7}", Base62::encode(n))
     }
 
-    /// Parse and return the route from the key's first two chars based on the total number of routes
+    /// Parse and return the route from the key's first two chars based on the total number of routes specified.
+    /// Total routes should be within 1..128 and the input is silentlyt clamped to that range.
+    /// The key should be a standard routing key, but since we just need the first two characters the lenth check is for 2.
+    /// If the length is < 2 a KeysError is returned.
     ///
-    pub fn get_route(key: &str, total_routes: u8) -> Result<u8, KeysError> {
+    /// Routes are returned as a u8 in the range of 0..total_routes.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let key = Keys::routing_key();
+    ///
+    /// if let Ok(route) = Keys::parse_route(&key, 1) {
+    ///     assert_eq!(route, 0); // a single route always returns route# 0
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// let total_routes = 24_u8;
+    /// if let Ok(route) = Keys::parse_route(&key, total_routes) {
+    ///     assert!((0..total_routes).contains(&route));
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// let total_routes = 128_u8;
+    /// if let Ok(route) = Keys::parse_route(&key, total_routes) {
+    ///     assert!((0..total_routes).contains(&route));
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// // test the clamp to 128
+    /// if let Ok(route) = Keys::parse_route(&key, 200_u8) {
+    ///     assert!((0..total_routes).contains(&route));
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// // test the error
+    /// let bad_key = String::new();
+    /// if let Ok(route) = Keys::parse_route(&bad_key, 1) {
+    ///     panic!("this should have failed");
+    /// }
+    ///
+    /// ```
+    ///
+    pub fn parse_route(key: &str, total_routes: u8) -> Result<u8, KeysError> {
         if key.len() < 2 {
             return Err(KeysError::InvalidSize);
         }
@@ -103,8 +150,6 @@ impl Keys {
             Err(KeysError::InvalidBase62(key))
         }
     }
-
-    // TODO implement calc_route from the key (first two digits) and the number of routes
 }
 
 #[cfg(test)]
@@ -121,7 +166,7 @@ mod tests {
     }
 
     #[test]
-    fn get_route_25() {
+    fn parse_route_25() {
         // test for 10 routes
         let total_routes = 25_u8;
 
@@ -135,7 +180,7 @@ mod tests {
         let mut current = 0_u8;
 
         for key in keys {
-            if let Ok(route) = Keys::get_route(&key, total_routes) {
+            if let Ok(route) = Keys::parse_route(&key, total_routes) {
                 assert!(route < total_routes);
                 assert_eq!(route, current);
                 current = (current + 1) % total_routes;
@@ -146,7 +191,7 @@ mod tests {
     }
 
     #[test]
-    fn get_route_10() {
+    fn parse_route_10() {
         // test for 10 routes
         let total_routes = 10_u8;
 
@@ -160,7 +205,7 @@ mod tests {
         let mut current = 0_u8;
 
         for key in keys {
-            if let Ok(route) = Keys::get_route(&key, total_routes) {
+            if let Ok(route) = Keys::parse_route(&key, total_routes) {
                 assert!(route < total_routes);
                 assert_eq!(route, current);
                 current = (current + 1) % total_routes;
@@ -171,11 +216,11 @@ mod tests {
     }
 
     #[test]
-    fn get_route_from_key() {
+    fn parse_route_from_key() {
         let key = Keys::routing_key();
 
         let test_route = |total_routes| {
-            if let Ok(route) = Keys::get_route(&key, total_routes) {
+            if let Ok(route) = Keys::parse_route(&key, total_routes) {
                 // special case when there is only a single route
                 if route < 2 {
                     assert_eq!(route, 0);
