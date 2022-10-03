@@ -3,12 +3,18 @@ use rand::Rng;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const MAX_64: u64 = 3521500000000;
-const MIN_64: u64 = 56810000000;
-// delta = 3_464_804_000_000
+const MAX_64: u64 = 3_521_614_606_207; // largest 7 digit from -> zzzzzzz
+const MIN_64: u64 = 14_776_336; // smallest 5 digit conversionn from -> 0010000
+const INSERT_INDEX: usize = 6;
+const ROUTE_KEY_SIZE: usize = 16;
 
 /// Define the micro timestamp
 type NanoTimeStamp = u128;
+
+pub enum KeysError<'a> {
+    InvalidSize,
+    InvalidBase62(&'a str),
+}
 
 pub struct Keys {}
 
@@ -26,13 +32,17 @@ impl Keys {
     /// assert_eq!(key.len(), 16);
     /// ```
     pub fn routing_key() -> String {
+        // get the timestamp in micros
         let ts = (Keys::now() / 1_000) as u64;
-
         let key = Base62::encode(ts);
 
-        let mut pad: String = Self::gen_random();
+        // now the random number padded to 7 chars
+        let mut pad: String = Self::encode_with_pad(Self::gen_random());
 
-        pad.insert_str(6, key.as_str());
+        // insert the timestamp at the 6th position
+        pad.insert_str(INSERT_INDEX, key.as_str());
+
+        assert_eq!(pad.len(), ROUTE_KEY_SIZE);
 
         pad.to_string()
     }
@@ -64,18 +74,82 @@ impl Keys {
     }
 
     // return a random number between min and max to stay in the 7 character range
-    fn gen_random() -> String {
+    fn gen_random() -> u64 {
         let mut rng = rand::thread_rng();
-        Base62::encode(rng.gen_range(MIN_64..MAX_64))
+
+        rng.gen_range(MIN_64..MAX_64)
     }
 
-    /*
-    pub fn get_route(&self, total_routes: u8) -> u8 {
-        (n % total_routes) as u8
+    // ensure 7 characters, padded with zeros...
+    fn encode_with_pad(n: u64) -> String {
+        format!("{:0>7}", Base62::encode(n))
     }
-    */
 
-    // TODO implement calc_route from the key (first two digits) and the number of routes
+    /// Parse and return the route from the key's first two chars based on the total number of routes specified.
+    /// Total routes should be within 1..128 and the input is silentlyt clamped to that range.
+    /// The key should be a standard routing key, but since we just need the first two characters the lenth check is for 2.
+    /// If the length is < 2 a KeysError is returned.
+    ///
+    /// Routes are returned as a u8 in the range of 0..total_routes.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let key = Keys::routing_key();
+    ///
+    /// if let Ok(route) = Keys::parse_route(&key, 1) {
+    ///     assert_eq!(route, 0); // a single route always returns route# 0
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// let total_routes = 24_u8;
+    /// if let Ok(route) = Keys::parse_route(&key, total_routes) {
+    ///     assert!((0..total_routes).contains(&route));
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// let total_routes = 128_u8;
+    /// if let Ok(route) = Keys::parse_route(&key, total_routes) {
+    ///     assert!((0..total_routes).contains(&route));
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// // test the clamp to 128
+    /// if let Ok(route) = Keys::parse_route(&key, 200_u8) {
+    ///     assert!((0..total_routes).contains(&route));
+    /// } else {
+    ///     panic!("bad route parse for key: {}", key);
+    /// }
+    ///
+    /// // test the error
+    /// let bad_key = String::new();
+    /// if let Ok(route) = Keys::parse_route(&bad_key, 1) {
+    ///     panic!("this should have failed");
+    /// }
+    ///
+    /// ```
+    ///
+    pub fn parse_route(key: &str, total_routes: u8) -> Result<u8, KeysError> {
+        if key.len() < 2 {
+            return Err(KeysError::InvalidSize);
+        }
+        let troutes = total_routes.clamp(1, 128);
+
+        let mut s = key.to_string();
+        s.truncate(2);
+
+        if let Ok(n) = Base62::decode(&s) {
+            let route = (n % troutes as u64) as u8;
+            Ok(route)
+        } else {
+            Err(KeysError::InvalidBase62(key))
+        }
+    }
 }
 
 #[cfg(test)]
@@ -83,7 +157,94 @@ mod tests {
     use super::*;
     use std::collections::HashSet;
 
-    const ROUTE_KEY_SIZE: usize = 16;
+    #[test]
+    fn random_number_in_range() {
+        for _ in 0..10 {
+            assert!(Keys::gen_random() >= MIN_64);
+            assert!(Keys::gen_random() <= MAX_64);
+        }
+    }
+
+    #[test]
+    fn parse_route_25() {
+        // test for 10 routes
+        let total_routes = 25_u8;
+
+        // create fake keys between 00 and zz
+        let keys: Vec<String> = (0..3843_u64)
+            .into_iter()
+            .map(|n| Base62::encode(n))
+            .map(|s| format!("{:0>2}", s))
+            .collect();
+
+        let mut current = 0_u8;
+
+        for key in keys {
+            if let Ok(route) = Keys::parse_route(&key, total_routes) {
+                assert!(route < total_routes);
+                assert_eq!(route, current);
+                current = (current + 1) % total_routes;
+            } else {
+                panic!("could not get route for key: {:?}", key);
+            }
+        }
+    }
+
+    #[test]
+    fn parse_route_10() {
+        // test for 10 routes
+        let total_routes = 10_u8;
+
+        // create fake keys between 00 and zz
+        let keys: Vec<String> = (0..3843_u64)
+            .into_iter()
+            .map(|n| Base62::encode(n))
+            .map(|s| format!("{:0>2}", s))
+            .collect();
+
+        let mut current = 0_u8;
+
+        for key in keys {
+            if let Ok(route) = Keys::parse_route(&key, total_routes) {
+                assert!(route < total_routes);
+                assert_eq!(route, current);
+                current = (current + 1) % total_routes;
+            } else {
+                panic!("could not get route for key: {:?}", key);
+            }
+        }
+    }
+
+    #[test]
+    fn parse_route_from_key() {
+        let key = Keys::routing_key();
+
+        let test_route = |total_routes| {
+            if let Ok(route) = Keys::parse_route(&key, total_routes) {
+                // special case when there is only a single route
+                if route < 2 {
+                    assert_eq!(route, 0);
+                } else {
+                    assert!(route < total_routes);
+                }
+            };
+        };
+
+        [0u8, 10u8, 24u8, 120u8].into_iter().for_each(test_route);
+    }
+
+    #[test]
+    fn encode_padding_size() {
+        // test max, min and halfway point
+        [MAX_64, MIN_64, MAX_64 / 2]
+            .iter()
+            .map(|x| Keys::encode_with_pad(*x))
+            .for_each(|s| assert_eq!(s.len(), 7));
+
+        // test the formats for min and max
+        assert_eq!(Keys::encode_with_pad(MIN_64), "0010000");
+        assert_eq!(Keys::encode_with_pad(MAX_64), "zzzzzzz");
+    }
 
     #[test]
     fn routing_key() {

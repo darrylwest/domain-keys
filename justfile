@@ -32,7 +32,7 @@ run:
 # build the release
 release:
     clear
-    cargo build --release && clear && ./target/release/spacial_controller --help
+    cargo build --release && clear && ./target/release/base62 --help
 
 # watch the current folders and run tests when a file is changed
 watch:
@@ -46,12 +46,12 @@ cover:
 merge:
     git push && git checkout main && git pull && git merge develop && git push && git checkout develop
 
-pull-piedmont:
+update-piedmont:
     ssh dpw@piedmont 'cd ~/raincity/rust-projects/{{ project }} && git pull'
 
-pull-tiburon:
+update-tiburon:
     ssh dpw@tiburon 'cd ~/raincity/rust-projects/{{ project }} && git pull'
 
-pull-remotes:
-    just pull-piedmont
-    just pull-tiburon
+update-remotes:
+    just update-piedmont
+    just update-tiburon
