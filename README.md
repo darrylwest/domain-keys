@@ -80,7 +80,7 @@ Flags
 
 ### To Do
 
-* _finish keys implementation, get_timestamp(), get_route()_
+* _finish keys implementation, unit, doc and integration tests, get_timestamp(), get_route()_
 * example of how implement routing logic for various destinations
 * _doc and integration tests_
 * create a key generation service - UDP request; do the same for base62
