@@ -83,6 +83,7 @@ Flags
 
 * _finish keys implementation, unit, doc and integration tests, get_timestamp(), get_route()_
 * example of how implement routing logic for various destinations
+* rethink Keys api; better names and replace routing_key with new
 * _doc and integration tests_
 * create a key generation service - UDP request; do the same for base62
 * create trait EncodeBase62 and DecodeBase62 to restrict generics to encode(any number) decode(vec<u8>, string, str, array[u8])

@@ -86,22 +86,22 @@ impl Keys {
     }
 
     /// Parse and return the route from the key's first two chars based on the total number of routes
-    /// 
+    ///
     pub fn get_route(key: &str, total_routes: u8) -> Result<u8, KeysError> {
         if key.len() < 2 {
             return Err(KeysError::InvalidSize);
         }
+        let troutes = total_routes.clamp(1, 128);
 
         let mut s = key.to_string();
         s.truncate(2);
 
         if let Ok(n) = Base62::decode(&s) {
-            let route = (n % total_routes as u64) as u8;
+            let route = (n % troutes as u64) as u8;
             Ok(route)
         } else {
             Err(KeysError::InvalidBase62(key))
         }
-
     }
 
     // TODO implement calc_route from the key (first two digits) and the number of routes
@@ -121,16 +121,17 @@ mod tests {
     }
 
     #[test]
-    fn get_route_10() {
+    fn get_route_25() {
         // test for 10 routes
-        let total_routes = 10_u8;
+        let total_routes = 25_u8;
 
         // create fake keys between 00 and zz
-        let keys: Vec<String> = (0..3843_u64).into_iter()
+        let keys: Vec<String> = (0..3843_u64)
+            .into_iter()
             .map(|n| Base62::encode(n))
             .map(|s| format!("{:0>2}", s))
             .collect();
-    
+
         let mut current = 0_u8;
 
         for key in keys {
@@ -145,13 +146,56 @@ mod tests {
     }
 
     #[test]
+    fn get_route_10() {
+        // test for 10 routes
+        let total_routes = 10_u8;
+
+        // create fake keys between 00 and zz
+        let keys: Vec<String> = (0..3843_u64)
+            .into_iter()
+            .map(|n| Base62::encode(n))
+            .map(|s| format!("{:0>2}", s))
+            .collect();
+
+        let mut current = 0_u8;
+
+        for key in keys {
+            if let Ok(route) = Keys::get_route(&key, total_routes) {
+                assert!(route < total_routes);
+                assert_eq!(route, current);
+                current = (current + 1) % total_routes;
+            } else {
+                panic!("could not get route for key: {:?}", key);
+            }
+        }
+    }
+
+    #[test]
+    fn get_route_from_key() {
+        let key = Keys::routing_key();
+
+        let test_route = |total_routes| {
+            if let Ok(route) = Keys::get_route(&key, total_routes) {
+                // special case when there is only a single route
+                if route < 2 {
+                    assert_eq!(route, 0);
+                } else {
+                    assert!(route < total_routes);
+                }
+            };
+        };
+
+        [0u8, 10u8, 24u8, 120u8].into_iter().for_each(test_route);
+    }
+
+    #[test]
     fn encode_padding_size() {
         // test max, min and halfway point
         [MAX_64, MIN_64, MAX_64 / 2]
             .iter()
             .map(|x| Keys::encode_with_pad(*x))
             .for_each(|s| assert_eq!(s.len(), 7));
-    
+
         // test the formats for min and max
         assert_eq!(Keys::encode_with_pad(MIN_64), "0010000");
         assert_eq!(Keys::encode_with_pad(MAX_64), "zzzzzzz");
