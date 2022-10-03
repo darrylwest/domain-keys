@@ -27,7 +27,7 @@ docs:
 
 # run the debug app
 run:
-    clear && cargo run --example routing-key
+    clear && cargo run --bin rtkey
 
 # build the release
 release:
