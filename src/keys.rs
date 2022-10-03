@@ -11,6 +11,11 @@ const ROUTE_KEY_SIZE: usize = 16;
 /// Define the micro timestamp
 type NanoTimeStamp = u128;
 
+pub enum KeysError<'a> {
+    InvalidSize,
+    InvalidBase62(&'a str),
+}
+
 pub struct Keys {}
 
 impl Keys {
@@ -80,11 +85,24 @@ impl Keys {
         format!("{:0>7}", Base62::encode(n))
     }
 
-    /*
-    pub fn get_route(&self, total_routes: u8) -> u8 {
-        (n % total_routes) as u8
+    /// Parse and return the route from the key's first two chars based on the total number of routes
+    /// 
+    pub fn get_route(key: &str, total_routes: u8) -> Result<u8, KeysError> {
+        if key.len() < 2 {
+            return Err(KeysError::InvalidSize);
+        }
+
+        let mut s = key.to_string();
+        s.truncate(2);
+
+        if let Ok(n) = Base62::decode(&s) {
+            let route = (n % total_routes as u64) as u8;
+            Ok(route)
+        } else {
+            Err(KeysError::InvalidBase62(key))
+        }
+
     }
-    */
 
     // TODO implement calc_route from the key (first two digits) and the number of routes
 }
@@ -94,12 +112,35 @@ mod tests {
     use super::*;
     use std::collections::HashSet;
 
-
     #[test]
     fn random_number_in_range() {
         for _ in 0..10 {
             assert!(Keys::gen_random() >= MIN_64);
             assert!(Keys::gen_random() <= MAX_64);
+        }
+    }
+
+    #[test]
+    fn get_route_10() {
+        // test for 10 routes
+        let total_routes = 10_u8;
+
+        // create fake keys between 00 and zz
+        let keys: Vec<String> = (0..3843_u64).into_iter()
+            .map(|n| Base62::encode(n))
+            .map(|s| format!("{:0>2}", s))
+            .collect();
+    
+        let mut current = 0_u8;
+
+        for key in keys {
+            if let Ok(route) = Keys::get_route(&key, total_routes) {
+                assert!(route < total_routes);
+                assert_eq!(route, current);
+                current = (current + 1) % total_routes;
+            } else {
+                panic!("could not get route for key: {:?}", key);
+            }
         }
     }
 
