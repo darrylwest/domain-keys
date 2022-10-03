@@ -35,5 +35,4 @@ fn main() {
     } else {
         println!("Key: {}, TimeStamp: {}", key, 0);
     }
-
 }

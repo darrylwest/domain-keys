@@ -222,7 +222,7 @@ mod tests {
         let test_route = |total_routes| {
             if let Ok(route) = Keys::parse_route(&key, total_routes) {
                 // special case when there is only a single route
-                if route < 2 {
+                if total_routes < 2 {
                     assert_eq!(route, 0);
                 } else {
                     assert!(route < total_routes);
@@ -230,7 +230,7 @@ mod tests {
             };
         };
 
-        [0u8, 10u8, 24u8, 120u8].into_iter().for_each(test_route);
+        [1u8, 10u8, 24u8, 120u8].into_iter().for_each(test_route);
     }
 
     #[test]
