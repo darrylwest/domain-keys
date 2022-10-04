@@ -2,7 +2,6 @@ use domain_keys::keys::Keys;
 use std::collections::HashSet;
 
 #[test]
-
 fn unique_test() {
     const ROUTE_KEY_SIZE: usize = 16;
 
@@ -16,4 +15,27 @@ fn unique_test() {
     }
 
     assert_eq!(table.len(), max_tests);
+}
+
+#[test]
+fn parse_route() {
+    // known Key: YM6I7clU96YvDTCr, TimeStamp: 1664899323738819
+    let key = "YM6I7clU96YvDTCr".to_string();
+    let total_routes = 25;
+
+    if let Ok(route) = Keys::parse_route(&key, total_routes) {
+        assert_eq!(route, 5);
+    } else {
+        panic!("parse error for route, key: {}", key);
+    }
+}
+
+#[test]
+fn parse_timestamp() {
+    let key = "YM6I7clU96YvDTCr".to_string();
+    let ref_ts = 1664899323738819_u64;
+
+    if let Ok(ts) = Keys::parse_timestamp(&key) {
+        assert_eq!(ts, ref_ts);
+    }
 }
