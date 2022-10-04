@@ -181,10 +181,11 @@ mod tests {
 
     #[test]
     fn parse_timestamp() {
+        let now = Keys::now() as u64 / 1000_u64;
         let key = Keys::routing_key();
 
         if let Ok(ts) = Keys::parse_timestamp(&key) {
-            assert!(ts > 0);
+            assert!(ts >= now);
         } else {
             panic!("not a valid timestamp");
         }
