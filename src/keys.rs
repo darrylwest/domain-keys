@@ -156,6 +156,20 @@ impl Keys {
 
     /// Parse the timestamp from the valid routing key.
     ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let now = Keys::now() as u64 / 1000_u64;
+    /// let key = Keys::routing_key();
+    ///
+    /// if let Ok(time_stamp) = Keys::parse_timestamp(&key) {
+    ///     assert!(now <= time_stamp);
+    /// } else {
+    ///     panic!("parse time stamp failed for key: {}", key);
+    /// }
+    /// ```
     pub fn parse_timestamp(key: &str) -> Result<u64, KeysError> {
         if key.len() != ROUTE_KEY_SIZE {
             return Err(KeysError::InvalidSize);
@@ -181,15 +195,27 @@ mod tests {
 
     #[test]
     fn parse_timestamp() {
+        let now = Keys::now() as u64 / 1000_u64;
         let key = Keys::routing_key();
 
         if let Ok(ts) = Keys::parse_timestamp(&key) {
-            assert!(ts > 0);
+            assert!(ts >= now);
         } else {
             panic!("not a valid timestamp");
         }
 
         assert!(true);
+    }
+
+    #[test]
+    fn parse_timestamp_error() {
+        let key = "sxxskw".to_string();
+
+        if let Ok(ts) = Keys::parse_timestamp(&key) {
+            panic!("this key should fail: {} -> {}", &key, ts);
+        } else {
+            assert!(true);
+        }
     }
 
     #[test]
