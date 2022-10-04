@@ -9,7 +9,7 @@ fn unique_test() {
     let mut table = HashSet::with_capacity(max_tests);
 
     for _ in 0..max_tests {
-        let key = RouteKey::routing_key();
+        let key = RouteKey::create();
         assert_eq!(key.len(), ROUTE_KEY_SIZE);
         assert_eq!(table.insert(key), true);
     }

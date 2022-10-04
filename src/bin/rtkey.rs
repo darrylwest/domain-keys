@@ -28,7 +28,7 @@ fn main() {
     // let config = Config::new();
     let args = CliArgs::new();
 
-    let key = RouteKey::routing_key();
+    let key = RouteKey::create();
 
     assert_eq!(key.len(), 16);
 

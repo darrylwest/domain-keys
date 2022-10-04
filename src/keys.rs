@@ -28,11 +28,11 @@ impl RouteKey {
     /// ```rust
     /// use domain_keys::keys::RouteKey;
     ///
-    /// let key = RouteKey::routing_key();
+    /// let key = RouteKey::create();
     ///
     /// assert_eq!(key.len(), 16);
     /// ```
-    pub fn routing_key() -> String {
+    pub fn create() -> String {
         // get the timestamp in micros
         let ts = (RouteKey::now() / 1_000) as u64;
         let key = Base62::encode(ts);
@@ -100,7 +100,7 @@ impl RouteKey {
     /// ```rust
     /// use domain_keys::keys::RouteKey;
     ///
-    /// let key = RouteKey::routing_key();
+    /// let key = RouteKey::create();
     ///
     /// if let Ok(route) = RouteKey::parse_route(&key, 1) {
     ///     assert_eq!(route, 0); // a single route always returns route# 0
@@ -162,7 +162,7 @@ impl RouteKey {
     /// use domain_keys::keys::RouteKey;
     ///
     /// let now = RouteKey::now() as u64 / 1000_u64;
-    /// let key = RouteKey::routing_key();
+    /// let key = RouteKey::create();
     ///
     /// if let Ok(time_stamp) = RouteKey::parse_timestamp(&key) {
     ///     assert!(now <= time_stamp);
@@ -196,7 +196,7 @@ mod tests {
     #[test]
     fn parse_timestamp() {
         let now = RouteKey::now() as u64 / 1000_u64;
-        let key = RouteKey::routing_key();
+        let key = RouteKey::create();
 
         if let Ok(ts) = RouteKey::parse_timestamp(&key) {
             assert!(ts >= now);
@@ -278,7 +278,7 @@ mod tests {
 
     #[test]
     fn parse_route_from_key() {
-        let key = RouteKey::routing_key();
+        let key = RouteKey::create();
 
         let test_route = |total_routes| {
             if let Ok(route) = RouteKey::parse_route(&key, total_routes) {
@@ -308,8 +308,8 @@ mod tests {
     }
 
     #[test]
-    fn routing_key() {
-        let key = RouteKey::routing_key();
+    fn create() {
+        let key = RouteKey::create();
 
         assert_eq!(key.len(), ROUTE_KEY_SIZE);
     }
@@ -321,7 +321,7 @@ mod tests {
         let mut table = HashSet::with_capacity(max_tests);
 
         for _ in 0..max_tests {
-            let key = RouteKey::routing_key();
+            let key = RouteKey::create();
             assert_eq!(key.len(), ROUTE_KEY_SIZE);
             assert_eq!(table.insert(key), true);
         }
