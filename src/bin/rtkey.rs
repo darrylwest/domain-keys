@@ -30,9 +30,13 @@ fn main() {
 
     let key = Keys::routing_key();
 
+    assert_eq!(key.len(), 16);
+
     if args.quiet {
         println!("{}", key);
+    } else if let Ok(ts) = Keys::parse_timestamp(&key) {
+        println!("Key: {}, TimeStamp: {}", key, ts);
     } else {
-        println!("Key: {}, TimeStamp: {}", key, 0);
+        println!("Key: {}, TimeStamp: ERROR", key);
     }
 }

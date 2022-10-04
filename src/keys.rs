@@ -5,7 +5,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 const MAX_64: u64 = 3_521_614_606_207; // largest 7 digit from -> zzzzzzz
 const MIN_64: u64 = 14_776_336; // smallest 5 digit conversionn from -> 0010000
-const INSERT_INDEX: usize = 6;
+const INSERT_INDEX: usize = 4;
 const ROUTE_KEY_SIZE: usize = 16;
 
 /// Define the micro timestamp
@@ -149,6 +149,26 @@ impl Keys {
         } else {
             Err(KeysError::InvalidBase62(key))
         }
+    }
+
+    /// Parse the timestamp from the valid routing key.
+    ///
+    pub fn parse_timestamp(key: &str) -> Result<u64, KeysError> {
+        if key.len() != ROUTE_KEY_SIZE {
+            return Err(KeysError::InvalidSize);
+        }
+
+        // pull the timestamp from the key
+
+        /*
+        if let Ok(n) = Base62::decode(&s) {
+            let ts = n;
+            Ok(ts)
+        } else {
+            Err(KeysError::InvalidBase62(key))
+        }
+         */
+        Ok(0)
     }
 }
 
