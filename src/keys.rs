@@ -14,6 +14,7 @@ type NanoTimeStamp = u128;
 pub enum KeysError<'a> {
     InvalidSize,
     InvalidBase62(&'a str),
+    ParseError,
 }
 
 pub struct Keys {}
@@ -35,6 +36,8 @@ impl Keys {
         // get the timestamp in micros
         let ts = (Keys::now() / 1_000) as u64;
         let key = Base62::encode(ts);
+
+        // println!("ts: {}, enc: {}", ts, &key);
 
         // now the random number padded to 7 chars
         let mut pad: String = Self::encode_with_pad(Self::gen_random());
@@ -158,17 +161,16 @@ impl Keys {
             return Err(KeysError::InvalidSize);
         }
 
-        // pull the timestamp from the key
+        // pull the timestamp from the key, always 8 chars
+        let encoded_timestamp = &key[INSERT_INDEX..=INSERT_INDEX + 8];
 
-        /*
-        if let Ok(n) = Base62::decode(&s) {
-            let ts = n;
+        // println!("key: {}, enc ts: {} ", &key, &encoded_timestamp);
+
+        if let Ok(ts) = Base62::decode(encoded_timestamp) {
             Ok(ts)
         } else {
-            Err(KeysError::InvalidBase62(key))
+            Err(KeysError::ParseError)
         }
-         */
-        Ok(0)
     }
 }
 
@@ -176,6 +178,19 @@ impl Keys {
 mod tests {
     use super::*;
     use std::collections::HashSet;
+
+    #[test]
+    fn parse_timestamp() {
+        let key = Keys::routing_key();
+
+        if let Ok(ts) = Keys::parse_timestamp(&key) {
+            assert!(ts > 0);
+        } else {
+            panic!("not a valid timestamp");
+        }
+
+        assert!(true);
+    }
 
     #[test]
     fn random_number_in_range() {
