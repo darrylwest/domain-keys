@@ -69,7 +69,7 @@ fn main() {
     } else if let Some(base62) = args.decode {
         show_decode(&base62, !args.quiet)
     } else if args.timestamp {
-        let now = domain_keys::keys::Keys::now() as u64;
+        let now = domain_keys::keys::RouteKey::now() as u64;
         println!("{} -> {}", now, Base62::encode(now));
     } else {
         println!("\nError: must add switch to --encode or --decode; try base62 --help\n");

@@ -11,30 +11,30 @@ const ROUTE_KEY_SIZE: usize = 16;
 /// Define the micro timestamp
 type NanoTimeStamp = u128;
 
-pub enum KeysError<'a> {
+pub enum RouteKeyError<'a> {
     InvalidSize,
     InvalidBase62(&'a str),
     ParseError,
 }
 
-pub struct Keys {}
+pub struct RouteKey {}
 
-impl Keys {
+impl RouteKey {
     /// Generate a new base62 routing key.
     ///
     ///
     /// # Example:
     ///
     /// ```rust
-    /// use domain_keys::keys::Keys;
+    /// use domain_keys::keys::RouteKey;
     ///
-    /// let key = Keys::routing_key();
+    /// let key = RouteKey::create();
     ///
     /// assert_eq!(key.len(), 16);
     /// ```
-    pub fn routing_key() -> String {
+    pub fn create() -> String {
         // get the timestamp in micros
-        let ts = (Keys::now() / 1_000) as u64;
+        let ts = (RouteKey::now() / 1_000) as u64;
         let key = Base62::encode(ts);
 
         // println!("ts: {}, enc: {}", ts, &key);
@@ -55,13 +55,13 @@ impl Keys {
     /// # Example:
     ///
     /// ```rust
-    /// use domain_keys::keys::Keys;
+    /// use domain_keys::keys::RouteKey;
     ///
-    /// let t0 = Keys::now();
+    /// let t0 = RouteKey::now();
     /// if std::env::consts::OS == "macos" {
     ///     println!("NOTE: mac os only resolves to microseconds...");
     /// }
-    /// let t1 = Keys::now();
+    /// let t1 = RouteKey::now();
     ///
     /// assert!(t0 < t1);
     /// ```
@@ -91,39 +91,39 @@ impl Keys {
     /// Parse and return the route from the key's first two chars based on the total number of routes specified.
     /// Total routes should be within 1..128 and the input is silentlyt clamped to that range.
     /// The key should be a standard routing key, but since we just need the first two characters the lenth check is for 2.
-    /// If the length is < 2 a KeysError is returned.
+    /// If the length is < 2 a RouteKeyError is returned.
     ///
     /// Routes are returned as a u8 in the range of 0..total_routes.
     ///
     /// # Example:
     ///
     /// ```rust
-    /// use domain_keys::keys::Keys;
+    /// use domain_keys::keys::RouteKey;
     ///
-    /// let key = Keys::routing_key();
+    /// let key = RouteKey::create();
     ///
-    /// if let Ok(route) = Keys::parse_route(&key, 1) {
+    /// if let Ok(route) = RouteKey::parse_route(&key, 1) {
     ///     assert_eq!(route, 0); // a single route always returns route# 0
     /// } else {
     ///     panic!("bad route parse for key: {}", key);
     /// }
     ///
     /// let total_routes = 24_u8;
-    /// if let Ok(route) = Keys::parse_route(&key, total_routes) {
+    /// if let Ok(route) = RouteKey::parse_route(&key, total_routes) {
     ///     assert!((0..total_routes).contains(&route));
     /// } else {
     ///     panic!("bad route parse for key: {}", key);
     /// }
     ///
     /// let total_routes = 128_u8;
-    /// if let Ok(route) = Keys::parse_route(&key, total_routes) {
+    /// if let Ok(route) = RouteKey::parse_route(&key, total_routes) {
     ///     assert!((0..total_routes).contains(&route));
     /// } else {
     ///     panic!("bad route parse for key: {}", key);
     /// }
     ///
     /// // test the clamp to 128
-    /// if let Ok(route) = Keys::parse_route(&key, 200_u8) {
+    /// if let Ok(route) = RouteKey::parse_route(&key, 200_u8) {
     ///     assert!((0..total_routes).contains(&route));
     /// } else {
     ///     panic!("bad route parse for key: {}", key);
@@ -131,15 +131,15 @@ impl Keys {
     ///
     /// // test the error
     /// let bad_key = String::new();
-    /// if let Ok(route) = Keys::parse_route(&bad_key, 1) {
+    /// if let Ok(route) = RouteKey::parse_route(&bad_key, 1) {
     ///     panic!("this should have failed");
     /// }
     ///
     /// ```
     ///
-    pub fn parse_route(key: &str, total_routes: u8) -> Result<u8, KeysError> {
+    pub fn parse_route(key: &str, total_routes: u8) -> Result<u8, RouteKeyError> {
         if key.len() < 2 {
-            return Err(KeysError::InvalidSize);
+            return Err(RouteKeyError::InvalidSize);
         }
         let troutes = total_routes.clamp(1, 128);
 
@@ -150,7 +150,7 @@ impl Keys {
             let route = (n % troutes as u64) as u8;
             Ok(route)
         } else {
-            Err(KeysError::InvalidBase62(key))
+            Err(RouteKeyError::InvalidBase62(key))
         }
     }
 
@@ -159,20 +159,20 @@ impl Keys {
     /// # Example:
     ///
     /// ```rust
-    /// use domain_keys::keys::Keys;
+    /// use domain_keys::keys::RouteKey;
     ///
-    /// let now = Keys::now() as u64 / 1000_u64;
-    /// let key = Keys::routing_key();
+    /// let now = RouteKey::now() as u64 / 1000_u64;
+    /// let key = RouteKey::create();
     ///
-    /// if let Ok(time_stamp) = Keys::parse_timestamp(&key) {
+    /// if let Ok(time_stamp) = RouteKey::parse_timestamp(&key) {
     ///     assert!(now <= time_stamp);
     /// } else {
     ///     panic!("parse time stamp failed for key: {}", key);
     /// }
     /// ```
-    pub fn parse_timestamp(key: &str) -> Result<u64, KeysError> {
+    pub fn parse_timestamp(key: &str) -> Result<u64, RouteKeyError> {
         if key.len() != ROUTE_KEY_SIZE {
-            return Err(KeysError::InvalidSize);
+            return Err(RouteKeyError::InvalidSize);
         }
 
         // pull the timestamp from the key, always 8 chars
@@ -183,7 +183,7 @@ impl Keys {
         if let Ok(ts) = Base62::decode(encoded_timestamp) {
             Ok(ts)
         } else {
-            Err(KeysError::ParseError)
+            Err(RouteKeyError::ParseError)
         }
     }
 }
@@ -195,10 +195,10 @@ mod tests {
 
     #[test]
     fn parse_timestamp() {
-        let now = Keys::now() as u64 / 1000_u64;
-        let key = Keys::routing_key();
+        let now = RouteKey::now() as u64 / 1000_u64;
+        let key = RouteKey::create();
 
-        if let Ok(ts) = Keys::parse_timestamp(&key) {
+        if let Ok(ts) = RouteKey::parse_timestamp(&key) {
             assert!(ts >= now);
         } else {
             panic!("not a valid timestamp");
@@ -211,7 +211,7 @@ mod tests {
     fn parse_timestamp_error() {
         let key = "sxxskw".to_string();
 
-        if let Ok(ts) = Keys::parse_timestamp(&key) {
+        if let Ok(ts) = RouteKey::parse_timestamp(&key) {
             panic!("this key should fail: {} -> {}", &key, ts);
         } else {
             assert!(true);
@@ -221,8 +221,8 @@ mod tests {
     #[test]
     fn random_number_in_range() {
         for _ in 0..10 {
-            assert!(Keys::gen_random() >= MIN_64);
-            assert!(Keys::gen_random() <= MAX_64);
+            assert!(RouteKey::gen_random() >= MIN_64);
+            assert!(RouteKey::gen_random() <= MAX_64);
         }
     }
 
@@ -241,7 +241,7 @@ mod tests {
         let mut current = 0_u8;
 
         for key in keys {
-            if let Ok(route) = Keys::parse_route(&key, total_routes) {
+            if let Ok(route) = RouteKey::parse_route(&key, total_routes) {
                 assert!(route < total_routes);
                 assert_eq!(route, current);
                 current = (current + 1) % total_routes;
@@ -266,7 +266,7 @@ mod tests {
         let mut current = 0_u8;
 
         for key in keys {
-            if let Ok(route) = Keys::parse_route(&key, total_routes) {
+            if let Ok(route) = RouteKey::parse_route(&key, total_routes) {
                 assert!(route < total_routes);
                 assert_eq!(route, current);
                 current = (current + 1) % total_routes;
@@ -278,10 +278,10 @@ mod tests {
 
     #[test]
     fn parse_route_from_key() {
-        let key = Keys::routing_key();
+        let key = RouteKey::create();
 
         let test_route = |total_routes| {
-            if let Ok(route) = Keys::parse_route(&key, total_routes) {
+            if let Ok(route) = RouteKey::parse_route(&key, total_routes) {
                 // special case when there is only a single route
                 if total_routes < 2 {
                     assert_eq!(route, 0);
@@ -299,17 +299,17 @@ mod tests {
         // test max, min and halfway point
         [MAX_64, MIN_64, MAX_64 / 2]
             .iter()
-            .map(|x| Keys::encode_with_pad(*x))
+            .map(|x| RouteKey::encode_with_pad(*x))
             .for_each(|s| assert_eq!(s.len(), 7));
 
         // test the formats for min and max
-        assert_eq!(Keys::encode_with_pad(MIN_64), "0010000");
-        assert_eq!(Keys::encode_with_pad(MAX_64), "zzzzzzz");
+        assert_eq!(RouteKey::encode_with_pad(MIN_64), "0010000");
+        assert_eq!(RouteKey::encode_with_pad(MAX_64), "zzzzzzz");
     }
 
     #[test]
-    fn routing_key() {
-        let key = Keys::routing_key();
+    fn create() {
+        let key = RouteKey::create();
 
         assert_eq!(key.len(), ROUTE_KEY_SIZE);
     }
@@ -321,7 +321,7 @@ mod tests {
         let mut table = HashSet::with_capacity(max_tests);
 
         for _ in 0..max_tests {
-            let key = Keys::routing_key();
+            let key = RouteKey::create();
             assert_eq!(key.len(), ROUTE_KEY_SIZE);
             assert_eq!(table.insert(key), true);
         }

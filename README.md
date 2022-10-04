@@ -81,9 +81,8 @@ Flags
 
 ### To Do
 
-* _finish keys implementation, unit, doc and integration tests, get_timestamp(), get_route()_
 * example of how implement routing logic for various destinations
-* rethink Keys api; better names and replace routing_key with new; consider renaming Keys to RoutingKey
+* rethink Keys api; better names and replace routing_key with new; consider renaming Keys to RouteKey
 * create min and max routes consts for Keys
 * _doc and integration tests_
 * create a key generation service - UDP request; do the same for base62
@@ -91,6 +90,7 @@ Flags
 * code coverage - linux only
 * add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
+* ~~finish keys implementation, unit, doc and integration tests, get_timestamp(), get_route()~~
 * ~~add error enums for base62~~
 * ~~extend the random number MIN to generate 5 chars then pad to 7 with zeros~~
 * ~~refactor base62 encode / decode to domain_keys::base62::Base62 or to a separate module~~
