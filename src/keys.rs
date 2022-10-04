@@ -1,4 +1,3 @@
-
 use crate::base62::Base62;
 use rand::Rng;
 

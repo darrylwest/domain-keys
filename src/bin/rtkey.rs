@@ -1,5 +1,5 @@
 use clap::Parser;
-use domain_keys::keys::Keys;
+use domain_keys::keys::RouteKey;
 // use domain_keys::config::Config;
 
 #[derive(Debug, Default, Parser)]
@@ -28,13 +28,13 @@ fn main() {
     // let config = Config::new();
     let args = CliArgs::new();
 
-    let key = Keys::routing_key();
+    let key = RouteKey::routing_key();
 
     assert_eq!(key.len(), 16);
 
     if args.quiet {
         println!("{}", key);
-    } else if let Ok(ts) = Keys::parse_timestamp(&key) {
+    } else if let Ok(ts) = RouteKey::parse_timestamp(&key) {
         println!("Key: {}, TimeStamp: {}", key, ts);
     } else {
         println!("Key: {}, TimeStamp: ERROR", key);
