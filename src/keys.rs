@@ -11,7 +11,8 @@ const ROUTE_KEY_SIZE: usize = 16;
 /// Define the micro timestamp
 type NanoTimeStamp = u128;
 
-pub enum RouteKeyError<'a> {
+#[derive(Debug)]
+pub enum DomainKeyError<'a> {
     InvalidSize,
     InvalidBase62(&'a str),
     ParseError,
@@ -137,9 +138,9 @@ impl RouteKey {
     ///
     /// ```
     ///
-    pub fn parse_route(key: &str, total_routes: u8) -> Result<u8, RouteKeyError> {
+    pub fn parse_route(key: &str, total_routes: u8) -> Result<u8, DomainKeyError> {
         if key.len() < 2 {
-            return Err(RouteKeyError::InvalidSize);
+            return Err(DomainKeyError::InvalidSize);
         }
         let troutes = total_routes.clamp(1, 128);
 
@@ -150,7 +151,7 @@ impl RouteKey {
             let route = (n % troutes as u64) as u8;
             Ok(route)
         } else {
-            Err(RouteKeyError::InvalidBase62(key))
+            Err(DomainKeyError::InvalidBase62(key))
         }
     }
 
@@ -170,9 +171,9 @@ impl RouteKey {
     ///     panic!("parse time stamp failed for key: {}", key);
     /// }
     /// ```
-    pub fn parse_timestamp(key: &str) -> Result<u64, RouteKeyError> {
+    pub fn parse_timestamp(key: &str) -> Result<u64, DomainKeyError> {
         if key.len() != ROUTE_KEY_SIZE {
-            return Err(RouteKeyError::InvalidSize);
+            return Err(DomainKeyError::InvalidSize);
         }
 
         // pull the timestamp from the key, always 8 chars
@@ -183,7 +184,7 @@ impl RouteKey {
         if let Ok(ts) = Base62::decode(encoded_timestamp) {
             Ok(ts)
         } else {
-            Err(RouteKeyError::ParseError)
+            Err(DomainKeyError::ParseError)
         }
     }
 }
