@@ -35,7 +35,7 @@ impl RouteKey {
     /// ```
     pub fn create() -> String {
         // get the timestamp in micros
-        let ts = (RouteKey::now() / 1_000) as u64;
+        let ts = (Self::now() / 1_000) as u64;
         let key = Base62::encode(ts);
 
         // println!("ts: {}, enc: {}", ts, &key);
@@ -49,32 +49,6 @@ impl RouteKey {
         assert_eq!(pad.len(), ROUTE_KEY_SIZE);
 
         pad.to_string()
-    }
-
-    /// return the current time in nanoseconds.  time is from the system clock.
-    ///
-    /// # Example:
-    ///
-    /// ```rust
-    /// use domain_keys::keys::RouteKey;
-    ///
-    /// let t0 = RouteKey::now();
-    /// if std::env::consts::OS == "macos" {
-    ///     println!("NOTE: mac os only resolves to microseconds...");
-    /// }
-    /// let t1 = RouteKey::now();
-    ///
-    /// assert!(t0 < t1);
-    /// ```
-    /// NOTE: osx time defaults to microseconds but the NanoTimeStamp is looking for nanos.  This shouldn't matter
-    /// for routing keys because they always resolve to micros.  But if you plan to use time based `txkey` with
-    /// nano seconds, be aware that mac always trucates the nanos to `000`.  Not a problem on linux.
-    ///
-    pub fn now() -> NanoTimeStamp {
-        match SystemTime::now().duration_since(UNIX_EPOCH) {
-            Ok(t) => t.as_nanos(),
-            Err(_) => panic!("System time befor Unix Epoch"),
-        }
     }
 
     // return a random number between min and max to stay in the 7 character range
@@ -155,6 +129,32 @@ impl RouteKey {
         }
     }
 
+    /// return the current time in nanoseconds.  time is from the system clock.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::RouteKey;
+    ///
+    /// let t0 = RouteKey::now();
+    /// if std::env::consts::OS == "macos" {
+    ///     println!("NOTE: mac os only resolves to microseconds...");
+    /// }
+    /// let t1 = RouteKey::now();
+    ///
+    /// assert!(t0 < t1);
+    /// ```
+    /// NOTE: osx time defaults to microseconds but the NanoTimeStamp is looking for nanos.  This shouldn't matter
+    /// for routing keys because they always resolve to micros.  But if you plan to use time based `txkey` with
+    /// nano seconds, be aware that mac always trucates the nanos to `000`.  Not a problem on linux.
+    ///
+    pub fn now() -> NanoTimeStamp {
+        match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(t) => t.as_nanos(),
+            Err(_) => panic!("System time befor Unix Epoch"),
+        }
+    }
+
     /// Parse the timestamp from the valid routing key.
     ///
     /// # Example:
@@ -189,9 +189,9 @@ impl RouteKey {
     }
 }
 
-pub struct TxKey {}
+pub struct TimeStampKey {}
 
-impl TxKey {
+impl TimeStampKey {
     /// Create a new 12 character base62 timestamp key.
     ///
     pub fn create() -> String {
@@ -219,6 +219,20 @@ impl TxKey {
 
         rng.gen_range(min_max)
     }
+
+    /// Parse the time from the timestamp key
+    ///
+    pub fn parse_timestamp(key: &str) -> Result<u64, DomainKeyError> {
+        let encoded_timestamp = &key[..=8];
+
+        println!("key: {}, enc ts: {} ", &key, &encoded_timestamp);
+
+        if let Ok(ts) = Base62::decode(encoded_timestamp) {
+            Ok(ts)
+        } else {
+            Err(DomainKeyError::ParseError)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -227,8 +241,21 @@ mod tx_key_tests {
     use std::collections::HashSet;
 
     #[test]
+    fn parse_timestamp() {
+        let now = RouteKey::now() as u64 / 1_000_u64;
+        let key = TimeStampKey::create();
+
+        if let Ok(ts) = TimeStampKey::parse_timestamp(&key) {
+            println!("{} {} {}", &key, now, ts);
+            assert!(now <= ts);
+        } else {
+            panic!("parse timestamp failed for key: {}", key);
+        }
+    }
+
+    #[test]
     fn create() {
-        let key = TxKey::create();
+        let key = TimeStampKey::create();
 
         println!("{}", key);
 
@@ -240,7 +267,7 @@ mod tx_key_tests {
         let max_tests: usize = 1_000;
         let mut table = HashSet::with_capacity(max_tests);
         for _ in 0..max_tests {
-            let key = TxKey::create();
+            let key = TimeStampKey::create();
 
             assert_eq!(key.len(), 12);
             assert_eq!(table.insert(key), true);
@@ -251,7 +278,7 @@ mod tx_key_tests {
 
     #[test]
     fn gen_random_3() {
-        let n = TxKey::gen_random(3);
+        let n = TimeStampKey::gen_random(3);
 
         assert!(n >= 3844);
         assert!(n <= 238327);

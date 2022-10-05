@@ -1,5 +1,5 @@
 use clap::Parser;
-use domain_keys::keys::TxKey;
+use domain_keys::keys::TimeStampKey;
 
 #[derive(Debug, Default, Parser)]
 #[clap(name = "txkey")]
@@ -16,7 +16,7 @@ pub struct CliArgs {
 fn main() {
     let args = CliArgs::parse();
 
-    let key = TxKey::create();
+    let key = TimeStampKey::create();
 
     if args.quiet {
         println!("{}", key);
