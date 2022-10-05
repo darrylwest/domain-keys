@@ -11,7 +11,7 @@ use domain_keys::base62::Base62;
 #[derive(Debug, Default, Parser)]
 #[clap(name = "base62")]
 #[command(author)]
-#[clap(version = "1.3")]
+#[clap(version = "1.4.0")]
 #[clap(long_about = None)]
 #[clap(about = "base62\n\nEncode a u64 number to base62, or decode a base62 String to u64.")]
 pub struct CliArgs {
