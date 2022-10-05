@@ -1,4 +1,4 @@
-use domain_keys::keys::TxKey;
+use domain_keys::keys::TimeStampKey;
 use std::collections::HashSet;
 
 #[test]
@@ -7,7 +7,7 @@ fn unique_test() {
     let mut table = HashSet::with_capacity(max_tests);
 
     for _ in 0..max_tests {
-        let key = TxKey::create();
+        let key = TimeStampKey::create();
         assert_eq!(key.len(), 12);
         assert_eq!(table.insert(key), true);
     }
