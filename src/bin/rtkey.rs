@@ -4,7 +4,7 @@ use domain_keys::keys::RouteKey;
 #[derive(Debug, Default, Parser)]
 #[clap(name = "rtkey")]
 #[command(author)]
-#[clap(version = "1.3")]
+#[clap(version = "1.4")]
 #[clap(long_about = None)]
 #[clap(about = "rtkey\n\ngenerate a new key and write the key and timestamp to stdout.")]
 pub struct CliArgs {
