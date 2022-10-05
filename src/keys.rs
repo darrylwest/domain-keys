@@ -18,6 +18,36 @@ pub enum DomainKeyError<'a> {
     ParseError,
 }
 
+pub struct Keys {}
+
+impl Keys {
+    /// return the current time in nanoseconds.  time is from the system clock.
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use domain_keys::keys::Keys;
+    ///
+    /// let t0 = Keys::now();
+    /// if std::env::consts::OS == "macos" {
+    ///     println!("NOTE: mac os only resolves to microseconds...");
+    /// }
+    /// let t1 = Keys::now();
+    ///
+    /// assert!(t0 < t1);
+    /// ```
+    /// NOTE: osx time defaults to microseconds but the NanoTimeStamp is looking for nanos.  This shouldn't matter
+    /// for routing keys because they always resolve to micros.  But if you plan to use time based `txkey` with
+    /// nano seconds, be aware that mac always trucates the nanos to `000`.  Not a problem on linux.
+    ///
+    pub fn now() -> NanoTimeStamp {
+        match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(t) => t.as_nanos(),
+            Err(_) => panic!("System time befor Unix Epoch"),
+        }
+    }
+}
+
 pub struct RouteKey {}
 
 impl RouteKey {
@@ -35,7 +65,7 @@ impl RouteKey {
     /// ```
     pub fn create() -> String {
         // get the timestamp in micros
-        let ts = (Self::now() / 1_000) as u64;
+        let ts = (Keys::now() / 1_000) as u64;
         let key = Base62::encode(ts);
 
         // println!("ts: {}, enc: {}", ts, &key);
@@ -129,40 +159,14 @@ impl RouteKey {
         }
     }
 
-    /// return the current time in nanoseconds.  time is from the system clock.
-    ///
-    /// # Example:
-    ///
-    /// ```rust
-    /// use domain_keys::keys::RouteKey;
-    ///
-    /// let t0 = RouteKey::now();
-    /// if std::env::consts::OS == "macos" {
-    ///     println!("NOTE: mac os only resolves to microseconds...");
-    /// }
-    /// let t1 = RouteKey::now();
-    ///
-    /// assert!(t0 < t1);
-    /// ```
-    /// NOTE: osx time defaults to microseconds but the NanoTimeStamp is looking for nanos.  This shouldn't matter
-    /// for routing keys because they always resolve to micros.  But if you plan to use time based `txkey` with
-    /// nano seconds, be aware that mac always trucates the nanos to `000`.  Not a problem on linux.
-    ///
-    pub fn now() -> NanoTimeStamp {
-        match SystemTime::now().duration_since(UNIX_EPOCH) {
-            Ok(t) => t.as_nanos(),
-            Err(_) => panic!("System time befor Unix Epoch"),
-        }
-    }
-
     /// Parse the timestamp from the valid routing key.
     ///
     /// # Example:
     ///
     /// ```rust
-    /// use domain_keys::keys::RouteKey;
+    /// use domain_keys::keys::{RouteKey, Keys};
     ///
-    /// let now = RouteKey::now() as u64 / 1000_u64;
+    /// let now = Keys::now() as u64 / 1000_u64;
     /// let key = RouteKey::create();
     ///
     /// if let Ok(time_stamp) = RouteKey::parse_timestamp(&key) {
@@ -195,7 +199,7 @@ impl TimeStampKey {
     /// Create a new 12 character base62 timestamp key.
     ///
     pub fn create() -> String {
-        let ts = (RouteKey::now() / 1_000) as u64;
+        let ts = (Keys::now() / 1_000) as u64;
 
         let r = Self::gen_random(3);
 
@@ -225,7 +229,7 @@ impl TimeStampKey {
     pub fn parse_timestamp(key: &str) -> Result<u64, DomainKeyError> {
         let encoded_timestamp = &key[..=8];
 
-        println!("key: {}, enc ts: {} ", &key, &encoded_timestamp);
+        // println!("key: {}, enc ts: {} ", &key, &encoded_timestamp);
 
         if let Ok(ts) = Base62::decode(encoded_timestamp) {
             Ok(ts)
@@ -242,7 +246,7 @@ mod tx_key_tests {
 
     #[test]
     fn parse_timestamp() {
-        let now = RouteKey::now() as u64 / 1_000_u64;
+        let now = Keys::now() as u64 / 1_000_u64;
         let key = TimeStampKey::create();
 
         if let Ok(ts) = TimeStampKey::parse_timestamp(&key) {
@@ -297,7 +301,7 @@ mod route_key_tests {
 
     #[test]
     fn parse_timestamp() {
-        let now = RouteKey::now() as u64 / 1000_u64;
+        let now = Keys::now() as u64 / 1000_u64;
         let key = RouteKey::create();
 
         println!("{}", key);
