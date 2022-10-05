@@ -20,7 +20,9 @@ fn main() {
 
     if args.quiet {
         println!("{}", key);
+    } else if let Ok(ts) = TimeStampKey::parse_timestamp(&key) {
+        println!("Key: {}, TimeStamp: {}", key, ts);
     } else {
-        println!("Key: {}, TimeStamp: {}", key, 0);
+        println!("Key: {}, TimeStamp: ERROR", key);
     }
 }
