@@ -54,7 +54,6 @@ This installs all the binary clis.
 
 ### Timestamp Key: txkey
 
-_TBD_
 
 ### Library Use Examples
 
@@ -82,7 +81,6 @@ Flags
 ### To Do
 
 * example of how implement routing logic for various destinations
-* rethink Keys api; better names and replace routing_key with new; consider renaming Keys to RouteKey
 * create min and max routes consts for Keys
 * _doc and integration tests_
 * create a key generation service - UDP request; do the same for base62
@@ -90,6 +88,7 @@ Flags
 * code coverage - linux only
 * add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
+* ~~rethink Keys api; better names and replace routing_key with new; consider renaming Keys to RouteKey~~
 * ~~finish keys implementation, unit, doc and integration tests, get_timestamp(), get_route()~~
 * ~~add error enums for base62~~
 * ~~extend the random number MIN to generate 5 chars then pad to 7 with zeros~~
@@ -102,4 +101,4 @@ Flags
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.10.03
+###### darryl.west | 2022.10.05
