@@ -1,6 +1,5 @@
 use clap::Parser;
 use domain_keys::keys::RouteKey;
-// use domain_keys::config::Config;
 
 #[derive(Debug, Default, Parser)]
 #[clap(name = "rtkey")]

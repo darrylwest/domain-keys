@@ -189,8 +189,82 @@ impl RouteKey {
     }
 }
 
+pub struct TxKey {}
+
+impl TxKey {
+    /// Create a new 12 character base62 timestamp key.
+    ///
+    pub fn create() -> String {
+        let ts = (RouteKey::now() / 1_000) as u64;
+
+        let r = Self::gen_random(3);
+
+        let key = Base62::encode(ts);
+
+        format!("{}{}", key, Base62::encode(r))
+    }
+
+    // return a random number the size, clamped between 3 and 5
+    fn gen_random(size: u8) -> u64 {
+        let mut rng = rand::thread_rng();
+
+        let sz = size.clamp(3, 5);
+
+        // sized for 3
+        let min_max = match sz {
+            3 => 3844..=238327_u64,
+            4 => 238328..=14776335_u64,
+            _ => 3844..=238327_u64,
+        };
+
+        rng.gen_range(min_max)
+    }
+}
+
 #[cfg(test)]
-mod tests {
+mod tx_key_tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn create() {
+        let key = TxKey::create();
+
+        println!("{}", key);
+
+        assert_eq!(key.len(), 12);
+    }
+
+    #[test]
+    fn check_unique() {
+        let max_tests: usize = 1_000;
+        let mut table = HashSet::with_capacity(max_tests);
+        for _ in 0..max_tests {
+            let key = TxKey::create();
+
+            assert_eq!(key.len(), 12);
+            assert_eq!(table.insert(key), true);
+        }
+
+        assert_eq!(table.len(), max_tests);
+    }
+
+    #[test]
+    fn gen_random_3() {
+        let n = TxKey::gen_random(3);
+
+        assert!(n >= 3844);
+        assert!(n <= 238327);
+
+        match n {
+            3844..=238327 => assert!(true),
+            _ => panic!("{} is not in range", n),
+        }
+    }
+}
+
+#[cfg(test)]
+mod route_key_tests {
     use super::*;
     use std::collections::HashSet;
 
@@ -198,6 +272,8 @@ mod tests {
     fn parse_timestamp() {
         let now = RouteKey::now() as u64 / 1000_u64;
         let key = RouteKey::create();
+
+        println!("{}", key);
 
         if let Ok(ts) = RouteKey::parse_timestamp(&key) {
             assert!(ts >= now);
