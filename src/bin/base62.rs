@@ -4,6 +4,19 @@
 //! A command line utility to encode a u64 number to a base62 string with characters [0..9A..Za..z] or
 //! to decode a base62 string to a u64 number.
 //!
+//! # Examples:
+//!
+//! ```bash
+//! base62 -e 12345
+//! 3D7
+//!
+//! base62 -e 3D7
+//! 12345
+//!
+//! base62 -t
+//! 1665071772589928000 -> 1z02sIVcGSu
+//! ```
+//!
 
 use clap::Parser;
 use domain_keys::base62::Base62;

@@ -1,3 +1,16 @@
+//! The CLI `rtkeys` generates or decodes a routing key.
+//!
+//! # Examples:
+//!
+//! ```bash
+//! rtkey
+//! Key: hhKZ7coVyViUJNCM, TimeStamp: 1665071400166511
+//!
+//!
+//! rtkey -q
+//! iGqc7coW37bHH8AY 
+//! ```
+//!
 use clap::Parser;
 use domain_keys::keys::RouteKey;
 
@@ -19,10 +32,6 @@ impl CliArgs {
     }
 }
 
-/// The CLI `rtkeys` generates or decodes a routing key.
-///
-/// # Example:
-///
 fn main() {
     // let config = Config::new();
     let args = CliArgs::new();
