@@ -2,6 +2,7 @@
 
 ## To Do
 
+* badges for code coverage, build status, docs
 * example of how implement routing logic for various destinations
 * create min and max routes consts for Keys
 * doc and integration tests
