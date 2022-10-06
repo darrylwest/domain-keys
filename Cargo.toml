@@ -1,6 +1,6 @@
 [package]
 name = "domain_keys"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2021"
 authors = ["darryl.west@raincitysoftware.com"]
 rust-version = "1.63"
@@ -9,6 +9,7 @@ keywords = ["keys", "key-generation", "unique-id"]
 categories = ["database", "kv", "kv store", "routing" ]
 license = "MIT OR Apach-2.0"
 readme = "README.md"
+homepage = "https://github.com/darrylwest/domain-keys"
 repository = "https://github.com/darrylwest/domain-keys"
 exclude = [ ".github/*" ]
 publish = false
