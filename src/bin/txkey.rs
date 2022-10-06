@@ -1,3 +1,17 @@
+//!
+//! txkey - generate a timestamp key, 12 chars 9 for the timestamp in micros
+//! and 3 random.
+//!
+//! # Examples:
+//!
+//! ```bash
+//! txkey
+//! Key: 7coWCdVsNZjI, TimeStamp: 1665071608893359
+//!
+//! txkey -q
+//! 7coWEn0Efg2p
+//! ```
+//!
 use clap::Parser;
 use domain_keys::keys::TimeStampKey;
 
