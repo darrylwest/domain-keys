@@ -8,7 +8,7 @@
 //!
 //!
 //! rtkey -q
-//! iGqc7coW37bHH8AY 
+//! iGqc7coW37bHH8AY
 //! ```
 //!
 use clap::Parser;
