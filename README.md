@@ -54,9 +54,9 @@ cargo add --path domain-keys
 
 ### Use
 
-```no_run
+```rust
 
-use domain_keys::keys::RoutKey;
+use domain_keys::keys::RouteKey;
 
 fn main() {
     let key = RouteKey::create();
@@ -90,4 +90,4 @@ fn main() {
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
 * [Resis serialization protocol spec](https://redis.io/docs/reference/protocol-spec/)
 
-###### darryl.west | 2022.10.10
+###### darryl.west | 2022.10.10a
