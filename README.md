@@ -44,10 +44,28 @@ or, if you have rust installed and are at or above version 1.63, do this...
 ```bash
 git clone https://github.com/darrylwest/domain-keys.git
 cd domain-keys
-cargo install --path ../domain-keys --bins
+cargo add --path ../domain-keys --bins
+
+# or
+
+git submodule add https://github.com/darrylwest/domain-keys.git
+cargo add --path domain-keys
 ```
 
-This installs all the binary clis.
+### Use
+
+```no_run
+
+use domain_keys::keys::RoutKey;
+
+fn main() {
+    let key = RouteKey::create();
+
+    assert_eq!(key.len(), 16);
+
+    println!("key: {}", &key);
+}
+```
 
 ### Route Key: rtkey
 
@@ -72,4 +90,4 @@ This installs all the binary clis.
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
 * [Resis serialization protocol spec](https://redis.io/docs/reference/protocol-spec/)
 
-###### darryl.west | 2022.10.06
+###### darryl.west | 2022.10.10
