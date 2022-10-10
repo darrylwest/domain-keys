@@ -2,6 +2,7 @@
 
 ## To Do
 
+* test/benchmark fastrand vs rand and consider replacing
 * badges for code coverage, build status, docs
 * example of how implement routing logic for various destinations
 * create min and max routes consts for Keys
@@ -24,4 +25,4 @@
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.10.06
+###### darryl.west | 2022.10.10
