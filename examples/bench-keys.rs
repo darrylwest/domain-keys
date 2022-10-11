@@ -13,5 +13,9 @@ fn main() {
 
     let elapsed = now.elapsed();
 
-    println!("keys for {} routes took {} nano seconds", total_routes, elapsed.as_nanos());
+    println!(
+        "keys for {} routes took {} nano seconds",
+        total_routes,
+        elapsed.as_nanos()
+    );
 }
