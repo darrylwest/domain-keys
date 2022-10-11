@@ -1,5 +1,4 @@
 use crate::base62::Base62;
-use rand::Rng;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -83,9 +82,7 @@ impl RouteKey {
 
     // return a random number between min and max to stay in the 7 character range
     fn gen_random() -> u64 {
-        let mut rng = rand::thread_rng();
-
-        rng.gen_range(MIN_64..MAX_64)
+        fastrand::u64(MIN_64..MAX_64)
     }
 
     // ensure 7 characters, padded with zeros...
@@ -210,8 +207,6 @@ impl TimeStampKey {
 
     // return a random number the size, clamped between 3 and 5
     fn gen_random(size: u8) -> u64 {
-        let mut rng = rand::thread_rng();
-
         let sz = size.clamp(3, 5);
 
         // sized for 3
@@ -221,7 +216,7 @@ impl TimeStampKey {
             _ => 3844..=238327_u64,
         };
 
-        rng.gen_range(min_max)
+        fastrand::u64(min_max)
     }
 
     /// Parse the time from the timestamp key
