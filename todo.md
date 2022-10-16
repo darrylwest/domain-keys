@@ -2,7 +2,6 @@
 
 ## To Do
 
-* test/benchmark fastrand vs rand and consider replacing
 * badges for code coverage, build status, docs
 * example of how implement routing logic for various destinations
 * create min and max routes consts for Keys
@@ -12,6 +11,7 @@
 * code coverage - linux only
 * add criterion, quickcheck for bench tests; [see this](https://github.com/fbernier/base62/blob/master/Cargo.toml)
 * fuzzing (cargo-fuzz)
+* ~~test/benchmark fastrand vs rand and consider replacing; fastrand is a bit faster and easier to use~~
 * ~~rethink Keys api; better names and replace routing_key with new; consider renaming Keys to RouteKey~~
 * ~~finish keys implementation, unit, doc and integration tests, get_timestamp(), get_route()~~
 * ~~add error enums for base62~~
@@ -25,4 +25,4 @@
 * ~~fill bytes to replace current random range~~
 * ~~is SmallRng the best choice?  it's the fastest, but not-portable (don't know what that means)~~
 
-###### darryl.west | 2022.10.10
+###### darryl.west | 2022.10.11

@@ -52,7 +52,7 @@ git submodule add https://github.com/darrylwest/domain-keys.git
 cargo add --path domain-keys
 ```
 
-### Use
+### Library Use
 
 ```rust
 
@@ -67,27 +67,18 @@ fn main() {
 }
 ```
 
-### Route Key: rtkey
+### Binaries
 
-
-### Timestamp Key: txkey
-
-
-### Library Use Examples
-
-
-### CLI
-
-`rtkey` : crates a single routing key
-`txkey` : creates a single timestamp key
-`show-route --routes n key`: shows the route number (0..n) for the given key
+* `rtkey` : crates a single routing key
+* `txkey` : creates a single timestamp key
+* `show-route --routes n key`: shows the route number (0..n) for the given key
 
 ### References
 
 * [Base62 Defined](https://en.wikipedia.org/wiki/Base62)
-* [Rust Rand Book](https://rust-random.github.io/book/intro.html)
 * [UUID RFC4122](https://datatracker.ietf.org/doc/html/rfc4122.html)
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
 * [Resis serialization protocol spec](https://redis.io/docs/reference/protocol-spec/)
 
-###### darryl.west | 2022.10.10a
+###### darryl.west | 2022.10.16
+
