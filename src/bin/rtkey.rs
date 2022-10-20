@@ -17,13 +17,18 @@ use domain_keys::keys::RouteKey;
 #[derive(Debug, Default, Parser)]
 #[clap(name = "rtkey")]
 #[command(author)]
-#[clap(version = "1.4.0")]
+#[clap(version = "1.5.4")]
 #[clap(long_about = None)]
-#[clap(about = "rtkey\n\ngenerate a new key and write the key and timestamp to stdout.")]
+#[clap(
+    about = "rtkey\n\ngenerate new key(s) and write to stdout. include timestamp when creating a single key."
+)]
 pub struct CliArgs {
     /// set quiet to suppress the timestamp and show only the key
     #[clap(short, long, value_parser)]
     pub quiet: bool,
+
+    #[clap(short, long, value_parser, default_value = "1")]
+    pub count: u16,
 }
 
 impl CliArgs {
@@ -40,7 +45,13 @@ fn main() {
 
     assert_eq!(key.len(), 16);
 
-    if args.quiet {
+    if args.count > 1 {
+        print!("{} ", key);
+        for _ in 1..args.count {
+            print!("{} ", RouteKey::create());
+        }
+        println!();
+    } else if args.quiet {
         println!("{}", key);
     } else if let Ok(ts) = RouteKey::parse_timestamp(&key) {
         println!("Key: {}, TimeStamp: {}", key, ts);
