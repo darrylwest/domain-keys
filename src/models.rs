@@ -60,7 +60,7 @@ impl Default for Status {
     }
 }
 
-#[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
 pub struct Model<T> {
     pub key: Cow<'static, str>,
     pub version: Version,
