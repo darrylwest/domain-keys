@@ -68,7 +68,8 @@ pub struct Model<T> {
     pub value: T,
 }
 
-impl<T: Default + Clone + PartialEq + Hash + PartialOrd> Model<T> {
+impl<T: Default + Clone + PartialOrd + Ord + PartialEq + Eq + Hash> Model<T> {
+    /// calculate the new hash value for this model
     pub fn calc_hash(value: &T) -> u64 {
         use std::collections::hash_map::DefaultHasher;
 
@@ -78,6 +79,7 @@ impl<T: Default + Clone + PartialEq + Hash + PartialOrd> Model<T> {
         hasher.finish()
     }
 
+    /// create a new model from the value; calc the new hash
     pub fn new(value: T) -> Model<T> {
         let hash = Model::calc_hash(&value);
         let version = Version::new(hash);
@@ -91,6 +93,7 @@ impl<T: Default + Clone + PartialEq + Hash + PartialOrd> Model<T> {
         }
     }
 
+    /// create a copy from the model
     pub fn from_model(model: &Model<T>) -> Model<T> {
         Model {
             key: model.key.clone(),
@@ -100,6 +103,7 @@ impl<T: Default + Clone + PartialEq + Hash + PartialOrd> Model<T> {
         }
     }
 
+    /// create a new model from existing values of key, version, status and value
     pub fn create_model(key: String, version: &Version, status: &Status, value: &T) -> Model<T> {
         Model {
             key: Cow::Owned(key),
