@@ -215,6 +215,35 @@ mod tests {
         assert_eq!(model.value, person);
     }
 
+    #[test]
+    fn calc_hash() {
+        let email = Cow::from("dpw@rcs.com");
+        let name = Cow::from("steve johnson");
+        let phone = Cow::from("123-555-3333");
+        let person = Peep::new(email, name, phone);
+
+        let key = RouteKey::create();
+        let kcopy = String::from(&key);
+        let version = Version::new(10u64);
+        assert_eq!(version.update_count, 0);
+        let update_count = version.update_count;
+        let status = Status::Active(128);
+
+        let model = Model::create_model(key, &version, &status, &person);
+        assert_eq!(model.version.update_count, 0);
+
+        let hash = Model::calc_hash(&model.value);
+
+        println!("new hash: {}", hash);
+        assert_ne!(model.version.hash, hash);
+
+        let version = model.version.update(hash);
+        assert_eq!(version.update_count, 1);
+        let mcopy = Model::create_model(kcopy, &version, &model.status, &model.value);
+
+        assert_eq!(mcopy.version.update_count, update_count + 1);
+    }
+
     #[derive(
         Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
     )]
