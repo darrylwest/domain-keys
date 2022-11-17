@@ -119,9 +119,12 @@ pub enum ModelError {
 }
 
 trait DomainModel<T> {
-    fn validate(model: Model<T>) -> Vec<ModelError>;
+    fn validate(model: &Model<T>) -> Vec<ModelError>;
     fn insert(model: Model<T>) -> Result<Model<T>>;
     fn update(model: Model<T>) -> Result<Model<T>>;
+
+    /// this can be used to mask or slim down attribute data
+    fn list_view(model: &Model<T>) -> Model<T>;
 }
 
 #[cfg(test)]
@@ -264,8 +267,8 @@ mod tests {
     }
 
     impl DomainModel<Peep> for Peep {
-        fn validate(model: Model<Peep>) -> Vec<ModelError> {
-            let peep = model.value;
+        fn validate(model: &Model<Peep>) -> Vec<ModelError> {
+            let peep = model.value.clone();
             let mut errors: Vec<ModelError> = Vec::new();
 
             if peep.email.is_empty() {
@@ -282,6 +285,13 @@ mod tests {
 
         fn update(model: Model<Peep>) -> Result<Model<Peep>> {
             Ok(model)
+        }
+
+        fn list_view(model: &Model<Peep>) -> Model<Peep> {
+            let mut value = model.value.clone();
+            value.phone = Cow::from("");
+
+            Model::create_model(model.key.to_string(), &model.version, &model.status, &value)
         }
     }
 }
