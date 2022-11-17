@@ -122,6 +122,7 @@ trait DomainModel<T> {
     fn validate(model: Model<T>) -> Vec<ModelError>;
     fn insert(model: Model<T>) -> Result<Model<T>>;
     fn update(model: Model<T>) -> Result<Model<T>>;
+    // fn list_view(model: Model<T>) -> ?
 }
 
 #[cfg(test)]
