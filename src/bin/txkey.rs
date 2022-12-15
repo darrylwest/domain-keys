@@ -22,9 +22,9 @@ use domain_keys::keys::TimeStampKey;
 #[clap(long_about = None)]
 #[clap(about = "txkey\n\ngenerate a new txkey and write the key and timestamp to stdout.")]
 pub struct CliArgs {
-    /// set quiet to suppress the timestamp and show only the key
+    /// set verbose to show the timestamp with the key
     #[clap(short, long, value_parser)]
-    pub quiet: bool,
+    pub verbose: bool,
 }
 
 fn main() {
@@ -32,7 +32,7 @@ fn main() {
 
     let key = TimeStampKey::create();
 
-    if args.quiet {
+    if !args.verbose {
         println!("{}", key);
     } else if let Ok(ts) = TimeStampKey::parse_timestamp(&key) {
         println!("Key: {}, TimeStamp: {}", key, ts);

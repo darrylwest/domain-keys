@@ -24,7 +24,7 @@ use domain_keys::base62::Base62;
 #[derive(Debug, Default, Parser)]
 #[clap(name = "base62")]
 #[command(author)]
-#[clap(version = "1.4.0")]
+#[clap(version = "0.7.1")]
 #[clap(long_about = None)]
 #[clap(about = "base62\n\nEncode a u64 number to base62, or decode a base62 String to u64.")]
 pub struct CliArgs {
@@ -40,8 +40,9 @@ pub struct CliArgs {
     #[clap(short, long, value_parser)]
     pub timestamp: bool,
 
+    /// show what was encoded/decoded
     #[clap(short, long, value_parser)]
-    pub quiet: bool,
+    pub verbose: bool,
 }
 
 impl CliArgs {
@@ -78,9 +79,9 @@ fn main() {
     // println!("{:?}", args);
 
     if let Some(n) = args.encode {
-        show_encode(n, !args.quiet);
+        show_encode(n, args.verbose);
     } else if let Some(base62) = args.decode {
-        show_decode(&base62, !args.quiet)
+        show_decode(&base62, args.verbose)
     } else if args.timestamp {
         let now = domain_keys::keys::Keys::now() as u64;
         println!("{} -> {}", now, Base62::encode(now));
