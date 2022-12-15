@@ -23,9 +23,9 @@ use domain_keys::keys::RouteKey;
     about = "rtkey\n\ngenerate new key(s) and write to stdout. include timestamp when creating a single key."
 )]
 pub struct CliArgs {
-    /// set quiet to suppress the timestamp and show only the key
+    /// set versose to show the timestamp with key
     #[clap(short, long, value_parser)]
-    pub quiet: bool,
+    pub verbose: bool,
 
     #[clap(short, long, value_parser, default_value = "1")]
     pub count: u16,
@@ -51,7 +51,7 @@ fn main() {
             print!("{} ", RouteKey::create());
         }
         println!();
-    } else if args.quiet {
+    } else if !args.verbose {
         println!("{}", key);
     } else if let Ok(ts) = RouteKey::parse_timestamp(&key) {
         println!("Key: {}, TimeStamp: {}", key, ts);
