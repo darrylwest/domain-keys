@@ -17,7 +17,7 @@ use domain_keys::keys::RouteKey;
 #[derive(Debug, Default, Parser)]
 #[clap(name = "rtkey")]
 #[command(author)]
-#[clap(version = "1.5.4")]
+#[clap(version = "0.7.1")]
 #[clap(long_about = None)]
 #[clap(
     about = "rtkey\n\ngenerate new key(s) and write to stdout. include timestamp when creating a single key."
