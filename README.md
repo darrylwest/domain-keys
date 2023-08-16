@@ -78,7 +78,7 @@ fn main() {
 * [Base62 Defined](https://en.wikipedia.org/wiki/Base62)
 * [UUID RFC4122](https://datatracker.ietf.org/doc/html/rfc4122.html)
 * [PCG Fast Algos for Random Number Generation](https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf)
-* [Resis serialization protocol spec](https://redis.io/docs/reference/protocol-spec/)
+* [Redis serialization protocol spec](https://redis.io/docs/reference/protocol-spec/)
 
 ## License
 
@@ -87,5 +87,5 @@ Except where noted (below and/or in individual files), all code in this reposito
 * MIT License ([LICENSE-MIT](LICENSE-MIT) or [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
 * Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
 
-###### darryl.west | 2022.10.16
+###### darryl.west | 2023.08.16
 
