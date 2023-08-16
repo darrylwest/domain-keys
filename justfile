@@ -34,6 +34,13 @@ release:
     clear
     cargo build --release && clear && ./target/release/base62 --help
 
+# install locally
+install:
+    cargo build --release
+    cp target/release/base62 ~/.cargo/bin/
+    cp target/release/rtkey ~/.cargo/bin/
+    cp target/release/txkey ~/.cargo/bin/
+
 # watch the current folders and run tests when a file is changed
 watch:
     watchexec -d 500 -c -e rs cargo test && cargo fmt && cargo clippy
