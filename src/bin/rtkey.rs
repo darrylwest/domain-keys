@@ -23,7 +23,7 @@ use domain_keys::keys::RouteKey;
     about = "rtkey\n\ngenerate new key(s) and write to stdout. include timestamp when creating a single key."
 )]
 pub struct CliArgs {
-    /// set versose to show the timestamp with key
+    /// set verbose to show the timestamp with key
     #[clap(short, long, value_parser)]
     pub verbose: bool,
 
